@@ -37,7 +37,8 @@ function App() {
     return null;
   }
 
-  const renderView = () => {
+  const AUTH_ROUTES = ['login', 'register', 'forgotPassword', 'resetPassword'];
+  if (AUTH_ROUTES.includes(route.name)) {
     switch (route.name) {
       case 'login':
         return <Login go={go} />;
@@ -46,7 +47,13 @@ function App() {
       case 'forgotPassword':
         return <ForgotPassword go={go} />;
       case 'resetPassword':
+      default:
         return <ResetPassword token={route.params.token} go={go} />;
+    }
+  }
+
+  const renderView = () => {
+    switch (route.name) {
       case 'content':
         return <ContentDetail id={route.params.id} go={go} />;
       case 'quizzes':

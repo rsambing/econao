@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import AuthLayout from '../components/AuthLayout';
 
 export default function Login({ go }) {
   const { login } = useAuth();
@@ -23,30 +24,37 @@ export default function Login({ go }) {
   };
 
   return (
-    <div>
-      <h1 className="page-title">Entrar</h1>
-      <p className="page-subtitle">Acede à tua conta EconAO.</p>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div className="form-group">
-          <label>Palavra-passe</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-        {error && <div className="error-text">{error}</div>}
-        <button type="submit" className="btn primary" disabled={loading}>
+    <AuthLayout>
+      <h2 className="auth-form-title">Entrar no EconAO</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          className="auth-input"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Palavra-passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <div className="error-text" style={{ marginBottom: 10 }}>{error}</div>}
+        <button type="submit" className="auth-btn-primary" disabled={loading}>
           {loading ? 'A entrar...' : 'Entrar'}
         </button>
       </form>
-      <p className="muted" style={{ marginTop: 12 }}>
-        <button className="btn" onClick={() => go('forgotPassword')}>Esqueci-me da senha</button>
-      </p>
-      <p className="muted" style={{ marginTop: 8 }}>
-        Ainda não tens conta?{' '}
-        <button className="btn" onClick={() => go('register')}>Registar</button>
-      </p>
-    </div>
+      <button type="button" className="auth-link-center" onClick={() => go('forgotPassword')}>
+        Esqueceu a senha?
+      </button>
+      <hr className="auth-divider" />
+      <button type="button" className="auth-btn-outline" onClick={() => go('register')}>
+        Criar nova conta
+      </button>
+    </AuthLayout>
   );
 }

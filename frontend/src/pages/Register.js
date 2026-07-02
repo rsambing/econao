@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import AuthLayout from '../components/AuthLayout';
 
 export default function Register({ go }) {
   const { register } = useAuth();
@@ -24,31 +25,42 @@ export default function Register({ go }) {
   };
 
   return (
-    <div>
-      <h1 className="page-title">Criar conta</h1>
-      <p className="page-subtitle">Junta-te à comunidade EconAO.</p>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Nome</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        <div className="form-group">
-          <label>Palavra-passe</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-        </div>
-        {error && <div className="error-text">{error}</div>}
-        <button type="submit" className="btn primary" disabled={loading}>
+    <AuthLayout>
+      <h2 className="auth-form-title">Criar conta EconAO</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          className="auth-input"
+          placeholder="Nome"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          className="auth-input"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Palavra-passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          minLength={6}
+        />
+        {error && <div className="error-text" style={{ marginBottom: 10 }}>{error}</div>}
+        <button type="submit" className="auth-btn-primary" disabled={loading}>
           {loading ? 'A criar...' : 'Criar conta'}
         </button>
       </form>
-      <p className="muted" style={{ marginTop: 16 }}>
-        Já tens conta?{' '}
-        <button className="btn" onClick={() => go('login')}>Entrar</button>
-      </p>
-    </div>
+      <hr className="auth-divider" />
+      <button type="button" className="auth-btn-outline" onClick={() => go('login')}>
+        Já tenho conta
+      </button>
+    </AuthLayout>
   );
 }
