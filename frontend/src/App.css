@@ -45,11 +45,14 @@ body {
 }
 
 .brand {
-  font-weight: 700;
-  font-size: 20px;
-  color: var(--bordeaux);
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  letter-spacing: 0.2px;
+}
+
+.brand-logo {
+  height: 34px;
+  display: block;
 }
 
 .nav {

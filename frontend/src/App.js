@@ -50,7 +50,9 @@ function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand" onClick={() => go('explore')}>EconAO</div>
+        <div className="brand" onClick={() => go('explore')}>
+          <img src="/assets/logo-wordmark.png" alt="EconAO" className="brand-logo" />
+        </div>
         <nav className="nav">
           <button className={`nav-btn ${route.name === 'explore' ? 'active' : ''}`} onClick={() => go('explore')}>
             Explorar

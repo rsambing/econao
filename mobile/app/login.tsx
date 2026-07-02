@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useBumbarTheme } from '../hooks/useBumbarTheme';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,6 +30,7 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Image source={require('../assets/logo-wordmark.png')} style={styles.logo} resizeMode="contain" />
       <Text style={[styles.title, { color: colors.text }]}>Entrar</Text>
       <BumbarOutlinedInput
         label="Email"
@@ -59,5 +60,6 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, justifyContent: 'center' },
+  logo: { width: 200, height: 82, alignSelf: 'center', marginBottom: 16 },
   title: { ...Typography.presets.h1, marginBottom: 24, textAlign: 'center' },
 });
