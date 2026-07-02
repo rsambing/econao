@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { listTopics, createTopic } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
+import { ListSkeleton } from '../components/Skeleton';
 
 export default function Forum({ go }) {
   const { user } = useAuth();
   const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
 
-  const load = () => listTopics().then(setTopics);
+  const load = () => listTopics().then(setTopics).finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
 
@@ -59,17 +61,21 @@ export default function Forum({ go }) {
         </form>
       )}
 
-      <div className="list">
-        {topics.map((t) => (
-          <div key={t.id} className="card" style={{ cursor: 'pointer' }} onClick={() => go('forumTopic', { id: t.id })}>
-            <h3 style={{ margin: 0 }}>{t.title}</h3>
-            <p className="muted" style={{ margin: '6px 0 0', fontSize: 14 }}>
-              por {t.author?.name} · {t._count?.replies ?? 0} respostas
-            </p>
-          </div>
-        ))}
-        {topics.length === 0 && <p className="muted">Ainda não há tópicos.</p>}
-      </div>
+      {loading ? (
+        <ListSkeleton count={3} />
+      ) : (
+        <div className="list">
+          {topics.map((t) => (
+            <div key={t.id} className="card" style={{ cursor: 'pointer' }} onClick={() => go('forumTopic', { id: t.id })}>
+              <h3 style={{ margin: 0 }}>{t.title}</h3>
+              <p className="muted" style={{ margin: '6px 0 0', fontSize: 14 }}>
+                por {t.author?.name} · {t._count?.replies ?? 0} respostas
+              </p>
+            </div>
+          ))}
+          {topics.length === 0 && <p className="muted">Ainda não há tópicos.</p>}
+        </div>
+      )}
     </div>
   );
 }

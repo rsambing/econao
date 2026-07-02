@@ -18,7 +18,7 @@ function App() {
   const go = (name, params = {}) => setRoute({ name, params });
 
   if (loading) {
-    return <div className="page">A carregar...</div>;
+    return null;
   }
 
   const renderView = () => {

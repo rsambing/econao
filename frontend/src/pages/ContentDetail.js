@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getContent, createComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
+import { DetailSkeleton } from '../components/Skeleton';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
@@ -26,7 +27,7 @@ export default function ContentDetail({ id, go }) {
     }
   };
 
-  if (!content) return <p className="muted">A carregar...</p>;
+  if (!content) return <DetailSkeleton />;
 
   return (
     <div>

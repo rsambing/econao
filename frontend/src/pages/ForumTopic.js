@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTopic, createReply } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
+import { DetailSkeleton } from '../components/Skeleton';
 
 export default function ForumTopic({ id, go }) {
   const { user } = useAuth();
@@ -24,7 +25,7 @@ export default function ForumTopic({ id, go }) {
     }
   };
 
-  if (!topic) return <p className="muted">A carregar...</p>;
+  if (!topic) return <DetailSkeleton />;
 
   return (
     <div>

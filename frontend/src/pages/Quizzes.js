@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { listQuizzes } from '../api/quiz';
+import { ListSkeleton } from '../components/Skeleton';
 
 export default function Quizzes({ go }) {
   const [quizzes, setQuizzes] = useState([]);
@@ -14,7 +15,7 @@ export default function Quizzes({ go }) {
       <h1 className="page-title">Quiz Interactivo</h1>
       <p className="page-subtitle">Testa os teus conhecimentos sobre economia e história angolana.</p>
 
-      {loading && <p className="muted">A carregar...</p>}
+      {loading && <ListSkeleton count={3} />}
 
       <div className="list">
         {quizzes.map((q) => (

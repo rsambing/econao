@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getQuiz, submitAttempt, getRanking } from '../api/quiz';
 import { useAuth } from '../context/AuthContext';
+import { DetailSkeleton } from '../components/Skeleton';
 
 export default function QuizPlay({ id, go }) {
   const { user } = useAuth();
@@ -35,7 +36,7 @@ export default function QuizPlay({ id, go }) {
     }
   };
 
-  if (!quiz) return <p className="muted">A carregar...</p>;
+  if (!quiz) return <DetailSkeleton />;
 
   const feedbackFor = (questionId) => result?.feedback?.find((f) => f.questionId === questionId);
 
