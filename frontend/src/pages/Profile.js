@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { uploadMedia } from '../api/upload';
 import Avatar from '../components/Avatar';
 
+const ROLE_LABEL = { ADMIN: 'Administrador', USER: 'Utilizador' };
+
 export default function Profile() {
   const { user, updateProfile } = useAuth();
   const [uploading, setUploading] = useState(false);
@@ -28,12 +30,14 @@ export default function Profile() {
   return (
     <div>
       <h1 className="page-title">Perfil</h1>
-      <div className="card" style={{ maxWidth: 420 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-          <Avatar name={user.name} url={user.avatarUrl} size={64} />
-          <div>
-            <label className="btn" style={{ cursor: 'pointer', display: 'inline-block' }}>
-              {uploading ? 'A enviar...' : 'Alterar foto'}
+      <p className="page-subtitle">Gere os teus dados e a tua foto de perfil.</p>
+
+      <div className="card" style={{ maxWidth: 420, margin: '0 auto', padding: 0, overflow: 'hidden' }}>
+        <div className="profile-header">
+          <div className="profile-avatar-wrapper">
+            <Avatar name={user.name} url={user.avatarUrl} size={96} />
+            <label className="profile-avatar-edit" title="Alterar foto">
+              {uploading ? '…' : '✎'}
               <input
                 type="file"
                 accept="image/*"
@@ -43,11 +47,21 @@ export default function Profile() {
               />
             </label>
           </div>
+          <h2 className="profile-name">{user.name}</h2>
+          <span className="badge profile-role">{ROLE_LABEL[user.role] || user.role}</span>
+          {error && <p className="error-text" style={{ marginTop: 12 }}>{error}</p>}
         </div>
-        {error && <p className="error-text">{error}</p>}
-        <p><strong>Nome:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Papel:</strong> <span className="badge">{user.role}</span></p>
+
+        <div className="profile-info">
+          <div className="profile-info-row">
+            <span className="profile-info-label">Email</span>
+            <span>{user.email}</span>
+          </div>
+          <div className="profile-info-row">
+            <span className="profile-info-label">Papel</span>
+            <span>{user.role}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

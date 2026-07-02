@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { UploadController } from '../controllers/upload.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
 import { authenticate } from '../middlewares/authenticate.middleware.js';
-import { authorize } from '../middlewares/authorize.middleware.js';
 import { presignUploadSchema } from '../schemas/validation.schemas.js';
 
 const uploadRouter = Router();
@@ -12,7 +11,7 @@ const uploadController = new UploadController();
  * @openapi
  * /uploads/presign:
  *   post:
- *     summary: Gerar URL presigned para upload direto ao R2 (ADMIN)
+ *     summary: Gerar URL presigned para upload direto ao R2 (qualquer utilizador autenticado)
  *     tags: [Uploads]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
@@ -33,7 +32,6 @@ const uploadController = new UploadController();
 uploadRouter.post(
   '/uploads/presign',
   authenticate,
-  authorize('ADMIN'),
   validateRequest(presignUploadSchema),
   uploadController.presign
 );
