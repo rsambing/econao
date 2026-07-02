@@ -5,6 +5,12 @@
       "name": "web",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start", "--prefix", "frontend"],
+      "port": 3002
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "backend"],
       "port": 3000
     }
   ]
