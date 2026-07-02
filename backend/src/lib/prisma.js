@@ -8,7 +8,22 @@ const PrismaClient = PrismaPkg.PrismaClient ?? PrismaPkg.default?.PrismaClient ?
 
 const connectionString = process.env.DATABASE_URL;
 
-const pool = new pg.Pool({ connectionString });
+// NeonDB (serverless Postgres) suspende a compute após inatividade. Quando isso
+// acontece, ligações TCP em cache no pool morrem silenciosamente. Reciclamos as
+// ligações idle rapidamente (antes de a Neon as fechar) para evitar entregar
+// sockets mortos, e tratamos erros de ligações idle para não derrubar o processo.
+const pool = new pg.Pool({
+  connectionString,
+  max: 10,
+  idleTimeoutMillis: 10_000,
+  connectionTimeoutMillis: 10_000,
+  allowExitOnIdle: true,
+});
+
+pool.on('error', (err) => {
+  // Ligação idle fechada pela Neon — descartada pelo pool, não é fatal.
+  console.warn('[pg pool] ligação idle terminada:', err.message);
+});
 
 const adapter = new PrismaPg(pool);
 
