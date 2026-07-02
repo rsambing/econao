@@ -28,7 +28,7 @@ npm run dev             # http://localhost:3000
 ```bash
 cd frontend
 npm install
-npm start                # http://localhost:3000 (definir REACT_APP_API_URL se o backend não estiver em localhost:3000)
+npm start                # http://localhost:3001 (definir REACT_APP_API_URL se o backend não estiver em localhost:3000)
 ```
 
 **Mobile**
