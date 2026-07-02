@@ -89,12 +89,6 @@ export const submitQuizAttemptSchema = z.object({
   })).min(1, 'É necessário responder pelo menos 1 pergunta')
 });
 
-// UPLOAD SCHEMAS
-export const presignUploadSchema = z.object({
-  filename: z.string().min(1, 'Nome do ficheiro é obrigatório'),
-  contentType: z.string().min(3, 'Tipo do ficheiro (MIME) é obrigatório')
-});
-
 // FORUM SCHEMAS
 export const createForumTopicSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres'),

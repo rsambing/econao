@@ -1,39 +1,32 @@
 import { Router } from 'express';
 import { UploadController } from '../controllers/upload.controller.js';
-import { validateRequest } from '../middlewares/validate.middleware.js';
 import { authenticate } from '../middlewares/authenticate.middleware.js';
-import { presignUploadSchema } from '../schemas/validation.schemas.js';
+import upload from '../middlewares/upload-multer.js';
 
 const uploadRouter = Router();
 const uploadController = new UploadController();
 
 /**
  * @openapi
- * /uploads/presign:
+ * /uploads:
  *   post:
- *     summary: Gerar URL presigned para upload direto ao R2 (qualquer utilizador autenticado)
+ *     summary: Enviar um ficheiro (imagem/vídeo/áudio) — o servidor envia-o ao R2
  *     tags: [Uploads]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               filename:
+ *               file:
  *                 type: string
- *               contentType:
- *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
- *         description: URL de upload e URL público final
+ *         description: URL público do ficheiro guardado no R2
  */
-uploadRouter.post(
-  '/uploads/presign',
-  authenticate,
-  validateRequest(presignUploadSchema),
-  uploadController.presign
-);
+uploadRouter.post('/uploads', authenticate, upload.single('file'), uploadController.upload);
 
 export default uploadRouter;
