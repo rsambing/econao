@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { listContent, createContent, updateContent, deleteContent } from '../../api/content';
+import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 
 const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', theme: '', region: '' };
@@ -9,6 +10,8 @@ export default function AdminContent({ go }) {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
   const load = () => listContent().then(setItems);
@@ -29,13 +32,22 @@ export default function AdminContent({ go }) {
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingId(null);
+    setFile(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const payload = { ...form, mediaUrl: form.mediaUrl || undefined, region: form.region || undefined };
+      let mediaUrl = form.mediaUrl;
+
+      if (file) {
+        setUploading(true);
+        mediaUrl = await uploadMedia(file);
+        setUploading(false);
+      }
+
+      const payload = { ...form, mediaUrl: mediaUrl || undefined, region: form.region || undefined };
       if (editingId) {
         await updateContent(editingId, payload);
       } else {
@@ -44,12 +56,14 @@ export default function AdminContent({ go }) {
       resetForm();
       load();
     } catch (err) {
+      setUploading(false);
       setError(err.message);
     }
   };
 
   const handleEdit = (item) => {
     setEditingId(item.id);
+    setFile(null);
     setForm({
       type: item.type,
       title: item.title,
@@ -95,8 +109,17 @@ export default function AdminContent({ go }) {
           />
         </div>
         <div className="form-group">
-          <label>URL de media (opcional)</label>
-          <input value={form.mediaUrl} onChange={handleChange('mediaUrl')} placeholder="https://..." />
+          <label>Media (imagem, vídeo ou áudio) — opcional</label>
+          <input
+            type="file"
+            accept="image/*,video/*,audio/*"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+          {form.mediaUrl && !file && (
+            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+              Media atual: <a href={form.mediaUrl} target="_blank" rel="noreferrer">ver ↗</a> (escolhe um ficheiro para substituir)
+            </p>
+          )}
         </div>
         <div className="form-group">
           <label>Tema</label>
@@ -108,8 +131,10 @@ export default function AdminContent({ go }) {
         </div>
         {error && <div className="error-text">{error}</div>}
         <div style={{ display: 'flex', gap: 10 }}>
-          <button type="submit" className="btn primary">{editingId ? 'Guardar alterações' : 'Criar conteúdo'}</button>
-          {editingId && <button type="button" className="btn" onClick={resetForm}>Cancelar</button>}
+          <button type="submit" className="btn primary" disabled={uploading}>
+            {uploading ? 'A enviar ficheiro...' : editingId ? 'Guardar alterações' : 'Criar conteúdo'}
+          </button>
+          {editingId && <button type="button" className="btn" onClick={resetForm} disabled={uploading}>Cancelar</button>}
         </div>
       </form>
 

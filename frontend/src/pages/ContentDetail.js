@@ -5,6 +5,20 @@ import { DetailSkeleton } from '../components/Skeleton';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
+const mediaStyle = { width: '100%', maxWidth: 640, borderRadius: 12, margin: '4px 0 8px' };
+
+function MediaPlayer({ type, url }) {
+  const ext = (url.split('.').pop() || '').toLowerCase();
+  const isVideo = type === 'VIDEO' || ['mp4', 'webm', 'mov', 'm4v'].includes(ext);
+  const isAudio = type === 'PODCAST' || ['mp3', 'wav', 'ogg', 'm4a'].includes(ext);
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].includes(ext);
+
+  if (isVideo) return <video src={url} controls style={mediaStyle} />;
+  if (isAudio) return <audio src={url} controls style={{ width: '100%', maxWidth: 640, margin: '4px 0 8px' }} />;
+  if (isImage) return <img src={url} alt="" style={mediaStyle} />;
+  return <p><a href={url} target="_blank" rel="noreferrer">Abrir media ↗</a></p>;
+}
+
 export default function ContentDetail({ id, go }) {
   const { user } = useAuth();
   const [content, setContent] = useState(null);
@@ -36,9 +50,7 @@ export default function ContentDetail({ id, go }) {
       <h1 className="page-title" style={{ marginTop: 10 }}>{content.title}</h1>
       <p className="muted">{content.theme}{content.region ? ` · ${content.region}` : ''}</p>
 
-      {content.mediaUrl && (
-        <p><a href={content.mediaUrl} target="_blank" rel="noreferrer">Abrir media ↗</a></p>
-      )}
+      {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} />}
 
       <p style={{ lineHeight: 1.6 }}>{content.body}</p>
 

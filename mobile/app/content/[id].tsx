@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, Image, Linking, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,6 +8,24 @@ import { BumbarButton } from '../../components';
 import { Typography } from '../../constants/Typography';
 
 const TYPE_LABEL: Record<string, string> = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
+
+function ContentMedia({ type, url, primary }: { type: string; url: string; primary: string }) {
+  const ext = (url.split('.').pop() || '').toLowerCase();
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].includes(ext);
+
+  // Imagens renderizam inline; vídeo/áudio abrem no leitor externo
+  // (reprodução nativa fica como melhoria futura com expo-video/expo-av).
+  if (isImage && type !== 'VIDEO' && type !== 'PODCAST') {
+    return <Image source={{ uri: url }} style={styles.media} resizeMode="cover" />;
+  }
+  return (
+    <TouchableOpacity onPress={() => Linking.openURL(url)} style={[styles.mediaLink, { borderColor: primary }]}>
+      <Text style={{ color: primary, fontWeight: '600' }}>
+        {type === 'VIDEO' ? '▶ Reproduzir vídeo' : type === 'PODCAST' ? '▶ Ouvir áudio' : 'Abrir media ↗'}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function ContentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -46,6 +64,7 @@ export default function ContentDetailScreen() {
       <Text style={{ color: colors.textSecondary, marginBottom: 16 }}>
         {content.theme}{content.region ? ` · ${content.region}` : ''}
       </Text>
+      {content.mediaUrl && <ContentMedia type={content.type} url={content.mediaUrl} primary={colors.primary} />}
       <Text style={[styles.body, { color: colors.text }]}>{content.body}</Text>
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Comentários</Text>
@@ -87,4 +106,6 @@ const styles = StyleSheet.create({
   sectionTitle: { ...Typography.presets.h3, marginBottom: 10 },
   comment: { borderTopWidth: 1, paddingVertical: 10 },
   input: { borderWidth: 1, borderRadius: 10, padding: 12, minHeight: 80, textAlignVertical: 'top' },
+  media: { width: '100%', height: 200, borderRadius: 12, marginBottom: 16 },
+  mediaLink: { borderWidth: 1, borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 16 },
 });
