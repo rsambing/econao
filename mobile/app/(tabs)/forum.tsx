@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { listTopics } from '../../services/forum';
 import { Typography } from '../../constants/Typography';
+import Avatar from '../../components/Avatar';
 
 export default function ForumScreen() {
   const { colors } = useBumbarTheme();
@@ -28,10 +29,16 @@ export default function ForumScreen() {
             style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => router.push(`/forum/${item.id}`)}
           >
-            <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
-            <Text style={{ color: colors.textSecondary, fontSize: 13, marginTop: 4 }}>
-              por {item.author?.name} · {item._count?.replies ?? 0} respostas
-            </Text>
+            {item.imageUrl && <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />}
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6 }}>
+                <Avatar name={item.author?.name} url={item.author?.avatarUrl} size={18} />
+                <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
+                  {item.author?.name} · {item._count?.replies ?? 0} respostas
+                </Text>
+              </View>
+            </View>
           </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={{ color: colors.textSecondary }}>Ainda não há tópicos.</Text>}
@@ -44,6 +51,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { ...Typography.presets.h2, marginBottom: 4 },
   subtitle: { ...Typography.presets.body, marginBottom: 16 },
-  card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12 },
+  card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center' },
+  cardImage: { width: 48, height: 48, borderRadius: 10, marginRight: 12 },
   cardTitle: { ...Typography.presets.h3 },
 });

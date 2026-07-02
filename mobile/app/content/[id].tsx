@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getContent, createComment } from '../../services/content';
 import { BumbarButton } from '../../components';
 import { Typography } from '../../constants/Typography';
+import Avatar from '../../components/Avatar';
 
 const TYPE_LABEL: Record<string, string> = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
@@ -70,8 +71,13 @@ export default function ContentDetailScreen() {
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Comentários</Text>
       {content.comments?.map((c: any) => (
         <View key={c.id} style={[styles.comment, { borderColor: colors.border }]}>
-          <Text style={{ fontWeight: '700', color: colors.text }}>{c.author?.name}</Text>
-          <Text style={{ color: colors.text, marginTop: 2 }}>{c.body}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
+            <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={28} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontWeight: '700', color: colors.text }}>{c.author?.name}</Text>
+              <Text style={{ color: colors.text, marginTop: 2 }}>{c.body}</Text>
+            </View>
+          </View>
         </View>
       ))}
       {(!content.comments || content.comments.length === 0) && (

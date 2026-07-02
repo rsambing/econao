@@ -31,6 +31,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="login" options={{ presentation: 'modal', headerShown: true, title: 'Entrar' }} />
           <Stack.Screen name="register" options={{ presentation: 'modal', headerShown: true, title: 'Registar' }} />
+          <Stack.Screen name="forgot-password" options={{ presentation: 'modal', headerShown: true, title: 'Recuperar senha' }} />
           <Stack.Screen name="content/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="quiz/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="forum/[id]" options={{ headerShown: true, title: '' }} />

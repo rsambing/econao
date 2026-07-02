@@ -52,7 +52,8 @@ export default function LoginScreen() {
       />
       <View style={{ height: 20 }} />
       <BumbarButton title="Entrar" onPress={handleLogin} loading={isLoading} variant="primary" size="large" fullWidth />
-      <View style={{ height: 16 }} />
+      <View style={{ height: 12 }} />
+      <BumbarButton title="Esqueci-me da senha" onPress={() => router.push('/forgot-password')} variant="tertiary" size="medium" fullWidth />
       <BumbarButton title="Ainda não tenho conta" onPress={() => router.replace('/register')} variant="tertiary" size="medium" fullWidth />
     </View>
   );

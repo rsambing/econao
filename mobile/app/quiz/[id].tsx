@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
@@ -42,6 +42,7 @@ export default function QuizPlayScreen() {
 
   return (
     <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={styles.container}>
+      {quiz.imageUrl && <Image source={{ uri: quiz.imageUrl }} style={styles.coverImage} />}
       <Text style={[styles.title, { color: colors.text }]}>{quiz.title}</Text>
 
       {!user && <Text style={{ color: colors.error, marginBottom: 12 }}>Precisas de entrar para responder.</Text>}
@@ -100,6 +101,7 @@ export default function QuizPlayScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: 20, paddingBottom: 48 },
+  coverImage: { width: '100%', height: 180, borderRadius: 14, marginBottom: 16 },
   title: { ...Typography.presets.h1, marginBottom: 16 },
   card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 14 },
   question: { ...Typography.presets.h3, marginBottom: 10 },
