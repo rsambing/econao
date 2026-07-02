@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma.js';
 
-const AUTHOR_SELECT = { author: { select: { id: true, name: true } } };
+const AUTHOR_SELECT = { author: { select: { id: true, name: true, avatarUrl: true } } };
 
 export class ForumService {
   async createTopic(data, authorId) {
@@ -23,7 +23,7 @@ export class ForumService {
       include: {
         ...AUTHOR_SELECT,
         replies: {
-          include: { author: { select: { id: true, name: true } } },
+          include: { author: { select: { id: true, name: true, avatarUrl: true } } },
           orderBy: { createdAt: 'asc' }
         }
       }
@@ -33,7 +33,7 @@ export class ForumService {
   async createReply(topicId, authorId, body) {
     return prisma.forumReply.create({
       data: { body, topicId, authorId },
-      include: { author: { select: { id: true, name: true } } }
+      include: { author: { select: { id: true, name: true, avatarUrl: true } } }
     });
   }
 }

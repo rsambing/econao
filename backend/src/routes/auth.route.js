@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
 import { authenticate } from '../middlewares/authenticate.middleware.js';
-import { loginSchema, registerSchema } from '../schemas/validation.schemas.js';
+import { loginSchema, registerSchema, forgotPasswordSchema, resetPasswordSchema, updateProfileSchema } from '../schemas/validation.schemas.js';
 
 const authRouter = Router();
 const authController = new AuthController();
@@ -71,5 +71,66 @@ authRouter.post('/auth/login', validateRequest(loginSchema), authController.logi
  *         description: Utilizador autenticado
  */
 authRouter.get('/auth/me', authenticate, authController.me);
+
+/**
+ * @openapi
+ * /auth/me:
+ *   put:
+ *     summary: Atualizar o próprio perfil (nome, avatar)
+ *     tags:
+ *       - Autenticação
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil atualizado
+ */
+authRouter.put('/auth/me', authenticate, validateRequest(updateProfileSchema), authController.updateMe);
+
+/**
+ * @openapi
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Pedir link de recuperação de senha por email
+ *     tags:
+ *       - Autenticação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Email enviado (se a conta existir)
+ */
+authRouter.post('/auth/forgot-password', validateRequest(forgotPasswordSchema), authController.forgotPassword);
+
+/**
+ * @openapi
+ * /auth/reset-password:
+ *   post:
+ *     summary: Redefinir a senha usando o token recebido por email
+ *     tags:
+ *       - Autenticação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Senha redefinida
+ */
+authRouter.post('/auth/reset-password', validateRequest(resetPasswordSchema), authController.resetPassword);
 
 export default authRouter;

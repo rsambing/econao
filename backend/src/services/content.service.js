@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma.js';
 
-const AUTHOR_SELECT = { author: { select: { id: true, name: true } } };
+const AUTHOR_SELECT = { author: { select: { id: true, name: true, avatarUrl: true } } };
 
 export class ContentService {
   async createContent(data, authorId) {
@@ -27,7 +27,7 @@ export class ContentService {
       include: {
         ...AUTHOR_SELECT,
         comments: {
-          include: { author: { select: { id: true, name: true } } },
+          include: { author: { select: { id: true, name: true, avatarUrl: true } } },
           orderBy: { createdAt: 'asc' }
         }
       }

@@ -8,6 +8,7 @@ const SELECT_SAFE_USER = {
   name: true,
   email: true,
   role: true,
+  avatarUrl: true,
   createdAt: true
 };
 
@@ -55,6 +56,7 @@ export class UserService {
     const updateData = {};
 
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.avatarUrl !== undefined) updateData.avatarUrl = data.avatarUrl;
     if (data.email !== undefined) updateData.email = data.email.toLowerCase();
     if (data.password !== undefined) {
       updateData.password = await this.hashPassword(data.password);

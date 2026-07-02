@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getContent, createComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
+import Avatar from '../components/Avatar';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
@@ -45,7 +46,7 @@ export default function ContentDetail({ id, go }) {
 
   return (
     <div>
-      <button className="btn" onClick={() => go('explore')} style={{ marginBottom: 16 }}>← Voltar</button>
+      <button className="btn" onClick={() => go('explore')} style={{ marginBottom: 16 }}> Voltar</button>
       <span className="badge">{TYPE_LABEL[content.type] || content.type}</span>
       <h1 className="page-title" style={{ marginTop: 10 }}>{content.title}</h1>
       <p className="muted">{content.theme}{content.region ? ` · ${content.region}` : ''}</p>
@@ -57,9 +58,12 @@ export default function ContentDetail({ id, go }) {
       <h2 style={{ marginTop: 32, fontSize: 18 }}>Comentários</h2>
       <div className="list">
         {content.comments?.map((c) => (
-          <div key={c.id} className="comment">
-            <strong>{c.author?.name}</strong>
-            <p style={{ margin: '4px 0 0' }}>{c.body}</p>
+          <div key={c.id} className="comment" style={{ display: 'flex', gap: 10 }}>
+            <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={32} />
+            <div>
+              <strong>{c.author?.name}</strong>
+              <p style={{ margin: '4px 0 0' }}>{c.body}</p>
+            </div>
           </div>
         ))}
         {(!content.comments || content.comments.length === 0) && <p className="muted">Sê o primeiro a comentar.</p>}

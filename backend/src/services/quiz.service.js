@@ -12,6 +12,7 @@ export class QuizService {
     return prisma.quiz.create({
       data: {
         title: data.title,
+        imageUrl: data.imageUrl || null,
         questions: {
           create: data.questions.map((q) => ({
             text: q.text,
@@ -28,7 +29,7 @@ export class QuizService {
 
   async getAllQuizzes() {
     return prisma.quiz.findMany({
-      select: { id: true, title: true, createdAt: true, _count: { select: { questions: true } } },
+      select: { id: true, title: true, imageUrl: true, createdAt: true, _count: { select: { questions: true } } },
       orderBy: { createdAt: 'desc' }
     });
   }

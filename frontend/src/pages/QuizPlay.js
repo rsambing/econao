@@ -43,6 +43,9 @@ export default function QuizPlay({ id, go }) {
   return (
     <div>
       <button className="btn" onClick={() => go('quizzes')} style={{ marginBottom: 16 }}>← Voltar</button>
+      {quiz.imageUrl && (
+        <img src={quiz.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
+      )}
       <h1 className="page-title">{quiz.title}</h1>
 
       {!user && <p className="error-text">Precisas de <button className="btn" onClick={() => go('login')}>entrar</button> para responder.</p>}

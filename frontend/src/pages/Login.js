@@ -40,7 +40,10 @@ export default function Login({ go }) {
           {loading ? 'A entrar...' : 'Entrar'}
         </button>
       </form>
-      <p className="muted" style={{ marginTop: 16 }}>
+      <p className="muted" style={{ marginTop: 12 }}>
+        <button className="btn" onClick={() => go('forgotPassword')}>Esqueci-me da senha</button>
+      </p>
+      <p className="muted" style={{ marginTop: 8 }}>
         Ainda não tens conta?{' '}
         <button className="btn" onClick={() => go('register')}>Registar</button>
       </p>

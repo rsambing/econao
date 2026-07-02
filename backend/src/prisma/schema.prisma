@@ -23,6 +23,10 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  avatarUrl String?
+
+  resetPasswordToken     String?   @unique
+  resetPasswordExpiresAt DateTime?
 
   contents      Content[]
   comments      Comment[]
@@ -63,8 +67,9 @@ model Comment {
 }
 
 model Quiz {
-  id    Int    @id @default(autoincrement())
-  title String
+  id       Int     @id @default(autoincrement())
+  title    String
+  imageUrl String?
 
   questions Question[]
   attempts  QuizAttempt[]
@@ -105,10 +110,11 @@ model QuizAttempt {
 }
 
 model ForumTopic {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
   description String
   theme       String?
+  imageUrl    String?
 
   authorId Int
   author   User @relation(fields: [authorId], references: [id])

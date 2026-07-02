@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getTopic, createReply } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
+import Avatar from '../components/Avatar';
 
 export default function ForumTopic({ id, go }) {
   const { user } = useAuth();
@@ -30,16 +31,25 @@ export default function ForumTopic({ id, go }) {
   return (
     <div>
       <button className="btn" onClick={() => go('forum')} style={{ marginBottom: 16 }}>← Voltar</button>
+      {topic.imageUrl && (
+        <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
+      )}
       <h1 className="page-title">{topic.title}</h1>
-      <p className="muted">por {topic.author?.name}</p>
+      <p className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <Avatar name={topic.author?.name} url={topic.author?.avatarUrl} size={20} />
+        por {topic.author?.name}
+      </p>
       <p style={{ lineHeight: 1.6 }}>{topic.description}</p>
 
       <h2 style={{ marginTop: 32, fontSize: 18 }}>Respostas</h2>
       <div className="list">
         {topic.replies?.map((r) => (
-          <div key={r.id} className="comment">
-            <strong>{r.author?.name}</strong>
-            <p style={{ margin: '4px 0 0' }}>{r.body}</p>
+          <div key={r.id} className="comment" style={{ display: 'flex', gap: 10 }}>
+            <Avatar name={r.author?.name} url={r.author?.avatarUrl} size={32} />
+            <div>
+              <strong>{r.author?.name}</strong>
+              <p style={{ margin: '4px 0 0' }}>{r.body}</p>
+            </div>
           </div>
         ))}
         {(!topic.replies || topic.replies.length === 0) && <p className="muted">Sê o primeiro a responder.</p>}

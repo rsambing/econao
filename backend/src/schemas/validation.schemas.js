@@ -15,6 +15,20 @@ export const registerSchema = z.object({
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres')
 });
 
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
+  avatarUrl: z.string().url('URL inválido').optional().or(z.literal(''))
+}).strict();
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Email inválido')
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token é obrigatório'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres')
+});
+
 // USER SCHEMAS
 export const createUserSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -57,6 +71,7 @@ export const createCommentSchema = z.object({
 // QUIZ SCHEMAS
 export const createQuizSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres'),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   questions: z.array(z.object({
     text: z.string().min(2, 'Pergunta deve ter pelo menos 2 caracteres'),
     order: z.number().int().optional().default(0),
@@ -84,7 +99,8 @@ export const presignUploadSchema = z.object({
 export const createForumTopicSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres'),
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres'),
-  theme: z.string().optional()
+  theme: z.string().optional(),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal(''))
 });
 
 export const createForumReplySchema = z.object({
