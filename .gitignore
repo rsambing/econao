@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Env files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Backend (Prisma)
+backend/generated/prisma
+
+# Frontend (CRA)
+frontend/build/
+
+# Mobile (Expo)
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/expo-env.d.ts
+mobile/*.tsbuildinfo
+mobile/ios/
+mobile/android/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/

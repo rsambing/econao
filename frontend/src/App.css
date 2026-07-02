@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bordeaux: #7a1f2b;
+  --bordeaux-dark: #5c1620;
+  --bordeaux-light: #f4e6e8;
+  --grey: #6b7280;
+  --grey-light: #eceae9;
+  --bg: #f7f5f4;
+  --surface: #ffffff;
+  --border: #e3ddda;
+  --text: #2a2323;
+  --muted: #767070;
+  --ok: #2e7d32;
+  --bad: #c62828;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--bordeaux);
+  cursor: pointer;
+  letter-spacing: 0.2px;
+}
+
+.nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: var(--grey-light);
+  color: var(--text);
+}
+
+.nav-btn.active {
+  background: var(--bordeaux-light);
+  color: var(--bordeaux);
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  width: 100%;
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 4px;
+  font-size: 26px;
+}
+
+.page-subtitle {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.btn.primary {
+  background: var(--bordeaux);
+  border-color: var(--bordeaux);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: var(--bordeaux-dark);
+}
+
+.btn.danger {
+  color: var(--bad);
+  border-color: var(--bad);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bordeaux-light);
+  color: var(--bordeaux);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.error-text {
+  color: var(--bad);
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment {
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.quiz-option.selected {
+  border-color: var(--bordeaux);
+  background: var(--bordeaux-light);
+}
+
+.quiz-option.correct {
+  border-color: var(--ok);
+  background: #e7f4ea;
+}
+
+.quiz-option.incorrect {
+  border-color: var(--bad);
+  background: #fdecea;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--grey-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.table tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}

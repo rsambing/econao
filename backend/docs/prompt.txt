@@ -1,0 +1,127 @@
+Analisa todo o projecto backend já existente antes de realizar qualquer alteração.
+O projecto já está completamente desenvolvido utilizando:
+Node.js
+Express
+Prisma ORM
+PostgreSQL/NeonDB
+Arquitetura em camadas
+ESModules (import/export)
+Objetivo: Adicionar autenticação e autorização com JWT ao sistema já existente, sem quebrar funcionalidades atuais.
+O sistema deve possuir apenas dois papéis (roles):
+ADMIN
+ATENDENTE
+Instruções importantes:
+Antes de implementar qualquer coisa:
+Analisa toda a estrutura do projecto
+Entende o fluxo atual da aplicação
+Identifica padrões já utilizados
+Verifica como os controllers, services, routes e middlewares estão organizados
+Verifica convenções de nomenclatura
+Verifica dependências já instaladas
+Verifica se já existe autenticação parcial, sessão, middleware ou validações
+Não recriar estruturas desnecessariamente.
+Reutiliza o máximo possível da arquitectura atual
+Mantém o padrão já utilizado no projecto
+Evita duplicação de lógica
+Não modificar funcionalidades já existentes sem necessidade.
+Implementar autenticação JWT profissional no projecto atual:
+Login com email e password
+Hash de passwords com bcrypt
+Geração de token JWT
+Verificação de token
+Middleware de autenticação
+Middleware de autorização por roles
+Atualizar o model User do Prisma:
+Adicionar enum Role
+Adicionar campo role
+Apenas os seguintes roles:
+ADMIN
+ATENDENTE
+Exemplo esperado:
+Prisma
+enum Role {
+  ADMIN
+  ATENDENTE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ATENDENTE)
+}
+O token JWT deve conter:
+id
+email
+role
+Criar proteção de rotas baseada em permissões:
+Rotas públicas
+Rotas autenticadas
+Rotas exclusivas para ADMIN
+Rotas permitidas para ADMIN e ATENDENTE
+Seguir exatamente o padrão arquitectural já existente no projecto. Se o projecto já possuir:
+pasta services
+middlewares
+utils
+helpers
+validators
+config
+então integrar a autenticação dentro dessa estrutura existente.
+Utilizar o ficheiro .env já existente no projecto.
+NÃO criar um novo .env
+NÃO substituir o .env atual
+Apenas adicionar as variáveis necessárias ao ficheiro existente
+Manter compatibilidade com todas as variáveis atuais
+Antes de alterar código:
+Explicar como o projecto está estruturado
+Explicar onde a autenticação será integrada
+Explicar possíveis problemas encontrados
+Explicar riscos de segurança existentes
+Após análise:
+Mostrar plano de implementação
+Mostrar ficheiros que serão alterados
+Mostrar novos ficheiros necessários
+Explicar motivo de cada alteração
+Implementar:
+autenticação completa
+autorização completa
+tratamento de erros
+status HTTP corretos
+segurança básica
+código limpo
+separação de responsabilidades
+Garantir:
+compatibilidade com ESModules
+compatibilidade com Prisma atual
+compatibilidade com estrutura já existente
+Não usar soluções simplificadas ou improvisadas. Implementar de forma profissional e escalável.
+Mostrar no final:
+Estrutura final dos ficheiros alterados
+Código completo das alterações
+Como testar no Postman
+Exemplos de login
+Exemplos de token JWT
+Exemplos de proteção de rotas
+Exemplo de middleware de role
+Criar também:
+configuração JWT integrada ao .env existente
+exemplo de variáveis JWT a adicionar no .env
+seed opcional para admin
+O sistema deve impedir:
+acesso sem token
+acesso com token inválido
+acesso sem permissão
+passwords sem hash
+Importante:
+Não assumir nada sem antes analisar o código existente
+Não substituir arquitectura atual do projecto
+Não criar código desconectado da estrutura atual
+Integrar tudo ao sistema já desenvolvido
+Preservar compatibilidade total com o projecto existente
+Antes de começar a implementação: Faça primeiro uma análise técnica completa do projecto e explique:
+arquitectura encontrada
+pontos fortes
+problemas encontrados
+melhorias recomendadas
+melhor estratégia para integrar JWT sem afectar o sistema atual.

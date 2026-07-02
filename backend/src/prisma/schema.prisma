@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ContentType {
+  VIDEO
+  TEXT
+  PODCAST
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  contents      Content[]
+  comments      Comment[]
+  quizAttempts  QuizAttempt[]
+  forumTopics   ForumTopic[]
+  forumReplies  ForumReply[]
+
+  createdAt DateTime @default(now())
+}
+
+model Content {
+  id       Int         @id @default(autoincrement())
+  type     ContentType
+  title    String
+  body     String
+  mediaUrl String?
+  theme    String
+  region   String?
+
+  authorId Int
+  author   User      @relation(fields: [authorId], references: [id])
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id   Int    @id @default(autoincrement())
+  body String
+
+  contentId Int
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Quiz {
+  id    Int    @id @default(autoincrement())
+  title String
+
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  createdAt DateTime @default(now())
+}
+
+model Question {
+  id    Int    @id @default(autoincrement())
+  text  String
+  order Int    @default(0)
+
+  quizId Int
+  quiz   Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options Option[]
+}
+
+model Option {
+  id        Int     @id @default(autoincrement())
+  text      String
+  isCorrect Boolean @default(false)
+
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id    Int @id @default(autoincrement())
+  score Int
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  quizId Int
+  quiz   Quiz @relation(fields: [quizId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model ForumTopic {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  theme       String?
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  replies ForumReply[]
+
+  createdAt DateTime @default(now())
+}
+
+model ForumReply {
+  id   Int    @id @default(autoincrement())
+  body String
+
+  topicId Int
+  topic   ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}

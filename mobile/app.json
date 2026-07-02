@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "EconAO",
+    "slug": "econao",
+    "version": "1.0.0",
+    "scheme": "econao",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#7A1F2B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ao.econao.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#7A1F2B"
+      },
+      "package": "ao.econao.app",
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}
