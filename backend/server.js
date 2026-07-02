@@ -39,7 +39,9 @@ app.get('/', (req, res) => {
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
-    console.log(`Esta a bumbar ${port}`);
+    const env = process.env.NODE_ENV || 'development';
+    console.log(`[EconAO API] a correr em http://localhost:${port} (ambiente: ${env})`);
+    console.log(`[EconAO API] documentação Swagger em http://localhost:${port}/docs`);
   });
 }
 
