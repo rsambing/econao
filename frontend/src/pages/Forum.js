@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listTopics, createTopic } from '../api/forum';
 import { uploadMedia } from '../api/upload';
 import { useAuth } from '../context/AuthContext';
 import { ListSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
 
-export default function Forum({ go }) {
+export default function Forum() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +91,7 @@ export default function Forum({ go }) {
               key={t.id}
               className="card"
               style={{ cursor: 'pointer', display: 'flex', gap: 14, alignItems: 'center' }}
-              onClick={() => go('forumTopic', { id: t.id })}
+              onClick={() => navigate(`/forum/${t.id}`)}
             >
               {t.imageUrl && (
                 <img src={t.imageUrl} alt="" style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />

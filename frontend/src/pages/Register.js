@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/AuthLayout';
 
-export default function Register({ go }) {
+export default function Register() {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +18,7 @@ export default function Register({ go }) {
     setLoading(true);
     try {
       await register(name, email, password);
-      go('explore');
+      navigate('/');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,9 +60,9 @@ export default function Register({ go }) {
         </button>
       </form>
       <hr className="auth-divider" />
-      <button type="button" className="auth-btn-outline" onClick={() => go('login')}>
+      <Link to="/login" className="auth-btn-outline" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
         Já tenho conta
-      </button>
+      </Link>
     </AuthLayout>
   );
 }

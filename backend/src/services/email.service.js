@@ -4,7 +4,7 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:3001').repla
 
 export class EmailService {
   async sendPasswordResetEmail(email, name, token) {
-    const resetUrl = `${FRONTEND_URL}?reset_token=${token}`;
+    const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
 
     await sendMail({
       to: email,

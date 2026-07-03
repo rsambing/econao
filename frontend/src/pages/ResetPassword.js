@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { resetPassword } from '../api/auth';
+import AuthLayout from '../components/AuthLayout';
 
-export default function ResetPassword({ token, go }) {
+export default function ResetPassword() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') || searchParams.get('reset_token');
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [done, setDone] = useState(false);
@@ -30,41 +35,53 @@ export default function ResetPassword({ token, go }) {
 
   if (!token) {
     return (
-      <div>
-        <h1 className="page-title">Link inválido</h1>
-        <p className="page-subtitle">Este link de recuperação não é válido. Pede um novo.</p>
-        <button className="btn" onClick={() => go('forgotPassword')}>Pedir novo link</button>
-      </div>
+      <AuthLayout>
+        <h2 className="auth-form-title">Link inválido</h2>
+        <p className="muted" style={{ marginBottom: 20 }}>Este link de recuperação não é válido. Pede um novo.</p>
+        <Link to="/forgot-password" className="auth-btn-primary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+          Pedir novo link
+        </Link>
+      </AuthLayout>
     );
   }
 
   if (done) {
     return (
-      <div>
-        <h1 className="page-title">Senha redefinida</h1>
-        <p className="page-subtitle">A tua senha foi alterada com sucesso. Já podes entrar.</p>
-        <button className="btn primary" onClick={() => go('login')}>Entrar</button>
-      </div>
+      <AuthLayout>
+        <h2 className="auth-form-title">Senha redefinida</h2>
+        <p className="muted" style={{ marginBottom: 20 }}>A tua senha foi alterada com sucesso. Já podes entrar.</p>
+        <button className="auth-btn-primary" onClick={() => navigate('/login')}>Entrar</button>
+      </AuthLayout>
     );
   }
 
   return (
-    <div>
-      <h1 className="page-title">Definir nova senha</h1>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Nova senha</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-        </div>
-        <div className="form-group">
-          <label>Confirmar nova senha</label>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} />
-        </div>
-        {error && <div className="error-text">{error}</div>}
-        <button type="submit" className="btn primary" disabled={loading}>
+    <AuthLayout>
+      <h2 className="auth-form-title">Definir nova senha</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Nova senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          minLength={6}
+        />
+        <input
+          className="auth-input"
+          type="password"
+          placeholder="Confirmar nova senha"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          minLength={6}
+        />
+        {error && <div className="error-text" style={{ marginBottom: 10 }}>{error}</div>}
+        <button type="submit" className="auth-btn-primary" disabled={loading}>
           {loading ? 'A redefinir...' : 'Redefinir senha'}
         </button>
       </form>
-    </div>
+    </AuthLayout>
   );
 }

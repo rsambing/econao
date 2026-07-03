@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { forgotPassword } from '../api/auth';
+import AuthLayout from '../components/AuthLayout';
 
-export default function ForgotPassword({ go }) {
+export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -23,33 +25,41 @@ export default function ForgotPassword({ go }) {
 
   if (sent) {
     return (
-      <div>
-        <h1 className="page-title">Verifica o teu email</h1>
-        <p className="page-subtitle">
+      <AuthLayout>
+        <h2 className="auth-form-title">Verifica o teu email</h2>
+        <p className="muted" style={{ marginBottom: 20 }}>
           Se existir uma conta com o email <strong>{email}</strong>, enviámos um link para redefinires a senha.
         </p>
-        <button className="btn" onClick={() => go('login')}>Voltar ao login</button>
-      </div>
+        <Link to="/login" className="auth-btn-primary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+          Voltar ao login
+        </Link>
+      </AuthLayout>
     );
   }
 
   return (
-    <div>
-      <h1 className="page-title">Esqueci-me da senha</h1>
-      <p className="page-subtitle">Indica o teu email e enviamos-te um link para definires uma nova senha.</p>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-        {error && <div className="error-text">{error}</div>}
-        <button type="submit" className="btn primary" disabled={loading}>
+    <AuthLayout>
+      <h2 className="auth-form-title">Esqueceu a senha?</h2>
+      <p className="muted" style={{ marginBottom: 20 }}>
+        Indica o teu email e enviamos-te um link para definires uma nova senha.
+      </p>
+      <form onSubmit={handleSubmit}>
+        <input
+          className="auth-input"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        {error && <div className="error-text" style={{ marginBottom: 10 }}>{error}</div>}
+        <button type="submit" className="auth-btn-primary" disabled={loading}>
           {loading ? 'A enviar...' : 'Enviar link de recuperação'}
         </button>
       </form>
-      <p className="muted" style={{ marginTop: 16 }}>
-        <button className="btn" onClick={() => go('login')}>Voltar ao login</button>
-      </p>
-    </div>
+      <Link to="/login" className="auth-link-center">
+        Voltar ao login
+      </Link>
+    </AuthLayout>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getContent, createComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
@@ -20,7 +21,9 @@ function MediaPlayer({ type, url }) {
   return <p><a href={url} target="_blank" rel="noreferrer">Abrir media ↗</a></p>;
 }
 
-export default function ContentDetail({ id, go }) {
+export default function ContentDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [content, setContent] = useState(null);
   const [commentBody, setCommentBody] = useState('');
@@ -46,7 +49,7 @@ export default function ContentDetail({ id, go }) {
 
   return (
     <div>
-      <button className="btn" onClick={() => go('explore')} style={{ marginBottom: 16 }}> Voltar</button>
+      <button className="btn" onClick={() => navigate('/')} style={{ marginBottom: 16 }}>← Voltar</button>
       <span className="badge">{TYPE_LABEL[content.type] || content.type}</span>
       <h1 className="page-title" style={{ marginTop: 10 }}>{content.title}</h1>
       <p className="muted">{content.theme}{content.region ? ` · ${content.region}` : ''}</p>
@@ -84,7 +87,7 @@ export default function ContentDetail({ id, go }) {
         </form>
       ) : (
         <p className="muted" style={{ marginTop: 16 }}>
-          <button className="btn" onClick={() => go('login')}>Entra</button> para comentar.
+          <button className="btn" onClick={() => navigate('/login')}>Entra</button> para comentar.
         </p>
       )}
     </div>

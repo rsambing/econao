@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listQuizzes } from '../api/quiz';
 import { ListSkeleton } from '../components/Skeleton';
 
-export default function Quizzes({ go }) {
+export default function Quizzes() {
+  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +31,7 @@ export default function Quizzes({ go }) {
                 <p className="muted" style={{ margin: '4px 0 0', fontSize: 14 }}>{q._count?.questions ?? 0} perguntas</p>
               </div>
             </div>
-            <button className="btn primary" onClick={() => go('quiz', { id: q.id })}>Iniciar Quiz</button>
+            <button className="btn primary" onClick={() => navigate(`/quiz/${q.id}`)}>Iniciar Quiz</button>
           </div>
         ))}
       </div>

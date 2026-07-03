@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getTopic, createReply } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
 
-export default function ForumTopic({ id, go }) {
+export default function ForumTopic() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [topic, setTopic] = useState(null);
   const [body, setBody] = useState('');
@@ -30,7 +33,7 @@ export default function ForumTopic({ id, go }) {
 
   return (
     <div>
-      <button className="btn" onClick={() => go('forum')} style={{ marginBottom: 16 }}>← Voltar</button>
+      <button className="btn" onClick={() => navigate('/forum')} style={{ marginBottom: 16 }}>← Voltar</button>
       {topic.imageUrl && (
         <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}
@@ -69,7 +72,7 @@ export default function ForumTopic({ id, go }) {
         </form>
       ) : (
         <p className="muted" style={{ marginTop: 16 }}>
-          <button className="btn" onClick={() => go('login')}>Entra</button> para responder.
+          <button className="btn" onClick={() => navigate('/login')}>Entra</button> para responder.
         </p>
       )}
     </div>

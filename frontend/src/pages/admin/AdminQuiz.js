@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listQuizzes, createQuiz } from '../../api/quiz';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 
 const EMPTY_QUESTION = () => ({ text: '', options: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] });
 
-export default function AdminQuiz({ go }) {
+export default function AdminQuiz() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
   const [title, setTitle] = useState('');
@@ -22,7 +24,7 @@ export default function AdminQuiz({ go }) {
     return (
       <div>
         <p className="error-text">Acesso restrito a administradores.</p>
-        <button className="btn" onClick={() => go('explore')}>Voltar</button>
+        <button className="btn" onClick={() => navigate('/')}>Voltar</button>
       </div>
     );
   }

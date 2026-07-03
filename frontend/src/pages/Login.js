@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/AuthLayout';
 
-export default function Login({ go }) {
+export default function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,7 +17,7 @@ export default function Login({ go }) {
     setLoading(true);
     try {
       await login(email, password);
-      go('explore');
+      navigate('/');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,13 +50,13 @@ export default function Login({ go }) {
           {loading ? 'A entrar...' : 'Entrar'}
         </button>
       </form>
-      <button type="button" className="auth-link-center" onClick={() => go('forgotPassword')}>
+      <Link to="/forgot-password" className="auth-link-center">
         Esqueceu a senha?
-      </button>
+      </Link>
       <hr className="auth-divider" />
-      <button type="button" className="auth-btn-outline" onClick={() => go('register')}>
+      <Link to="/register" className="auth-btn-outline" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
         Criar nova conta
-      </button>
+      </Link>
     </AuthLayout>
   );
 }

@@ -555,3 +555,257 @@ body {
     padding: 32px 24px;
   }
 }
+
+/* App Shell — layout inspirado no Facebook */
+.fb-app {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.fb-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: 56px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fb-topbar-left,
+.fb-topbar-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.fb-topbar-right {
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.fb-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.fb-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: block;
+}
+
+.fb-brand-word {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--bordeaux);
+  letter-spacing: -0.2px;
+}
+
+.fb-topbar-center {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fb-nav-icon {
+  width: 96px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  position: relative;
+  text-decoration: none;
+}
+
+.fb-nav-icon:hover {
+  background: var(--grey-light);
+}
+
+.fb-nav-icon.active {
+  color: var(--bordeaux);
+}
+
+.fb-nav-icon.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 3px;
+  background: var(--bordeaux);
+  border-radius: 3px 3px 0 0;
+}
+
+.fb-guest-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fb-user-menu {
+  position: relative;
+}
+
+.fb-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--grey-light);
+  border: none;
+  border-radius: 999px;
+  padding: 4px 8px 4px 4px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.fb-user-trigger:hover {
+  filter: brightness(0.97);
+}
+
+.fb-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  padding: 8px;
+  z-index: 30;
+}
+
+.fb-dropdown-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.fb-dropdown-header strong {
+  display: block;
+  font-size: 14px;
+}
+
+.fb-dropdown-role {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fb-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fb-dropdown-item:hover {
+  background: var(--grey-light);
+}
+
+.fb-dropdown-item.danger {
+  color: var(--bad);
+}
+
+.fb-body {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.fb-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 16px 8px;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.fb-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.fb-sidebar-item:hover {
+  background: var(--grey-light);
+}
+
+.fb-sidebar-item.active {
+  background: var(--bordeaux-light);
+  color: var(--bordeaux);
+}
+
+.fb-sidebar-profile {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.fb-sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 8px;
+}
+
+.fb-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .fb-sidebar {
+    display: none;
+  }
+
+  .fb-nav-icon {
+    width: 72px;
+  }
+}
+
+@media (max-width: 560px) {
+  .fb-brand-word {
+    display: none;
+  }
+
+  .fb-nav-icon {
+    width: 56px;
+  }
+
+  .fb-main {
+    padding: 18px 14px 48px;
+  }
+}

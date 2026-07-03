@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listContent, createContent, updateContent, deleteContent } from '../../api/content';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 
 const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', theme: '', region: '' };
 
-export default function AdminContent({ go }) {
+export default function AdminContent() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -22,7 +24,7 @@ export default function AdminContent({ go }) {
     return (
       <div>
         <p className="error-text">Acesso restrito a administradores.</p>
-        <button className="btn" onClick={() => go('explore')}>Voltar</button>
+        <button className="btn" onClick={() => navigate('/')}>Voltar</button>
       </div>
     );
   }

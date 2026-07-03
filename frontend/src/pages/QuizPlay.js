@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getQuiz, submitAttempt, getRanking } from '../api/quiz';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 
-export default function QuizPlay({ id, go }) {
+export default function QuizPlay() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -42,13 +45,13 @@ export default function QuizPlay({ id, go }) {
 
   return (
     <div>
-      <button className="btn" onClick={() => go('quizzes')} style={{ marginBottom: 16 }}>← Voltar</button>
+      <button className="btn" onClick={() => navigate('/quizzes')} style={{ marginBottom: 16 }}>← Voltar</button>
       {quiz.imageUrl && (
         <img src={quiz.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}
       <h1 className="page-title">{quiz.title}</h1>
 
-      {!user && <p className="error-text">Precisas de <button className="btn" onClick={() => go('login')}>entrar</button> para responder.</p>}
+      {!user && <p className="error-text">Precisas de <button className="btn" onClick={() => navigate('/login')}>entrar</button> para responder.</p>}
 
       {quiz.questions.map((q) => {
         const fb = feedbackFor(q.id);
