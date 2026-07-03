@@ -33,7 +33,7 @@ export default function ForumTopic() {
 
   return (
     <div>
-      <button className="btn" onClick={() => navigate('/forum')} style={{ marginBottom: 16 }}>← Voltar</button>
+      <button className="btn" onClick={() => navigate('/forum')} style={{ marginBottom: 16 }}> Voltar</button>
       {topic.imageUrl && (
         <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}

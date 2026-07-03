@@ -4,7 +4,7 @@ import { listContent, createContent, updateContent, deleteContent } from '../../
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 
-const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', theme: '', region: '' };
+const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '' };
 
 export default function AdminContent() {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ export default function AdminContent() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -34,6 +35,7 @@ export default function AdminContent() {
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingId(null);
+    setCoverFile(null);
     setFile(null);
   };
 
@@ -42,14 +44,19 @@ export default function AdminContent() {
     setError('');
     try {
       let mediaUrl = form.mediaUrl;
+      let imageUrl = form.imageUrl;
 
-      if (file) {
-        setUploading(true);
-        mediaUrl = await uploadMedia(file);
-        setUploading(false);
-      }
+      if (coverFile || file) setUploading(true);
+      if (coverFile) imageUrl = await uploadMedia(coverFile);
+      if (file) mediaUrl = await uploadMedia(file);
+      setUploading(false);
 
-      const payload = { ...form, mediaUrl: mediaUrl || undefined, region: form.region || undefined };
+      const payload = {
+        ...form,
+        mediaUrl: mediaUrl || undefined,
+        imageUrl: imageUrl || undefined,
+        region: form.region || undefined
+      };
       if (editingId) {
         await updateContent(editingId, payload);
       } else {
@@ -65,12 +72,14 @@ export default function AdminContent() {
 
   const handleEdit = (item) => {
     setEditingId(item.id);
+    setCoverFile(null);
     setFile(null);
     setForm({
       type: item.type,
       title: item.title,
       body: item.body,
       mediaUrl: item.mediaUrl || '',
+      imageUrl: item.imageUrl || '',
       theme: item.theme,
       region: item.region || ''
     });
@@ -111,7 +120,20 @@ export default function AdminContent() {
           />
         </div>
         <div className="form-group">
-          <label>Media (imagem, vídeo ou áudio) — opcional</label>
+          <label>Imagem de capa (mostrada em Explorar) — opcional</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+          />
+          {form.imageUrl && !coverFile && (
+            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+              Capa atual: <a href={form.imageUrl} target="_blank" rel="noreferrer">ver ↗</a> (escolhe um ficheiro para substituir)
+            </p>
+          )}
+        </div>
+        <div className="form-group">
+          <label>Media (vídeo, áudio ou imagem do conteúdo) — opcional</label>
           <input
             type="file"
             accept="image/*,video/*,audio/*"

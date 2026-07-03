@@ -6,7 +6,7 @@
   --bordeaux-light: #f4e6e8;
   --grey: #6b7280;
   --grey-light: #eceae9;
-  --bg: #f7f5f4;
+  --bg: #ffffff;
   --surface: #ffffff;
   --border: #e3ddda;
   --text: #2a2323;
@@ -144,6 +144,110 @@ body {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Content card — foto grande, overlay em gradiente, footer com botão */
+.content-card {
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 14px 28px -14px rgba(42, 35, 35, 0.22);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), 0 18px 32px -14px rgba(42, 35, 35, 0.28);
+}
+
+.content-card-media {
+  position: relative;
+  height: 260px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--grey-light);
+}
+
+.content-card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0.72) 100%);
+}
+
+.content-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.content-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.content-card-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.content-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.88);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.content-card-footer {
+  padding: 12px 16px;
+}
+
+.content-card-btn {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.content-card-btn:hover {
+  background: var(--grey-light);
+}
+
+.content-hero {
+  height: 300px;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--grey-light);
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
 }
 
 .badge {

@@ -51,7 +51,8 @@ async function main() {
       body: 'Vídeo explicativo sobre a evolução da inflação em Angola, com dados históricos e atuais.',
       theme: 'Inflação',
       region: 'Nacional',
-      mediaUrl: SAMPLE_VIDEO
+      mediaUrl: SAMPLE_VIDEO,
+      imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'TEXT',
@@ -59,7 +60,8 @@ async function main() {
       body: 'Artigo sobre as dinâmicas do comércio angolano durante o período colonial.',
       theme: 'História Económica',
       region: 'Luanda',
-      mediaUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80'
+      mediaUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'PODCAST',
@@ -67,7 +69,8 @@ async function main() {
       body: 'Episódio sobre o papel das mulheres no empreendedorismo e comércio angolano.',
       theme: 'Empreendedorismo',
       region: 'Nacional',
-      mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+      mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      imageUrl: 'https://images.unsplash.com/photo-1518183214770-9cffbec72538?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'TEXT',
@@ -75,7 +78,8 @@ async function main() {
       body: 'Do Escudo Angolano ao Kwanza: a evolução da moeda nacional ao longo da história.',
       theme: 'Reformas Monetárias',
       region: 'Nacional',
-      mediaUrl: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=900&q=80'
+      mediaUrl: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=900&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'TEXT',
@@ -83,7 +87,8 @@ async function main() {
       body: 'Como a exportação de petróleo moldou a economia angolana entre 2005 e 2014.',
       theme: 'Economia',
       region: 'Cabinda',
-      mediaUrl: 'https://images.unsplash.com/photo-1611095973763-414019e72400?auto=format&fit=crop&w=900&q=80'
+      mediaUrl: 'https://images.unsplash.com/photo-1611095973763-414019e72400?auto=format&fit=crop&w=900&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1611095973763-414019e72400?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'TEXT',
@@ -91,7 +96,8 @@ async function main() {
       body: 'O crescimento urbano da capital angolana e o seu impacto socioeconómico nas últimas décadas.',
       theme: 'Urbanização',
       region: 'Luanda',
-      mediaUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=900&q=80'
+      mediaUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=900&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'PODCAST',
@@ -99,7 +105,8 @@ async function main() {
       body: 'Conversa sobre os movimentos migratórios internos em Angola e as suas causas económicas.',
       theme: 'Migração',
       region: 'Nacional',
-      mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+      mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&q=80'
     },
     {
       type: 'VIDEO',
@@ -107,7 +114,8 @@ async function main() {
       body: 'Documentário curto sobre a transição para a economia de mercado em Angola.',
       theme: 'Reformas Económicas',
       region: 'Nacional',
-      mediaUrl: SAMPLE_VIDEO
+      mediaUrl: SAMPLE_VIDEO,
+      imageUrl: 'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?auto=format&fit=crop&w=900&q=80'
     }
   ];
 
@@ -117,10 +125,16 @@ async function main() {
     if (!existing) {
       contentRow = await prisma.content.create({ data: { ...c, authorId: admin.id } });
       console.log('✓ Conteúdo:', c.title);
-    } else if (!existing.mediaUrl) {
-      // Backfill de mediaUrl em conteúdos de execuções anteriores do seed.
-      contentRow = await prisma.content.update({ where: { id: existing.id }, data: { mediaUrl: c.mediaUrl } });
-      console.log('✓ Conteúdo atualizado (mediaUrl):', c.title);
+    } else if (!existing.mediaUrl || !existing.imageUrl) {
+      // Backfill de mediaUrl/imageUrl em conteúdos de execuções anteriores do seed.
+      contentRow = await prisma.content.update({
+        where: { id: existing.id },
+        data: {
+          mediaUrl: existing.mediaUrl || c.mediaUrl,
+          imageUrl: existing.imageUrl || c.imageUrl
+        }
+      });
+      console.log('✓ Conteúdo atualizado (mediaUrl/imageUrl):', c.title);
     }
 
     // Um comentário de exemplo por conteúdo, de utilizadores diferentes

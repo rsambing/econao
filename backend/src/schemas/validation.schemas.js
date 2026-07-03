@@ -50,6 +50,7 @@ export const createContentSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres'),
   body: z.string().min(5, 'Conteúdo deve ter pelo menos 5 caracteres'),
   mediaUrl: z.string().url('URL inválido').optional().or(z.literal('')),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres'),
   region: z.string().optional()
 });
@@ -59,6 +60,7 @@ export const updateContentSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres').optional(),
   body: z.string().min(5, 'Conteúdo deve ter pelo menos 5 caracteres').optional(),
   mediaUrl: z.string().url('URL inválido').optional().or(z.literal('')),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres').optional(),
   region: z.string().optional()
 }).strict();

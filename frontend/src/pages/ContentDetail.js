@@ -7,17 +7,29 @@ import Avatar from '../components/Avatar';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
-const mediaStyle = { width: '100%', maxWidth: 640, borderRadius: 12, margin: '4px 0 8px' };
+const IMAGE_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'];
+const VIDEO_EXT = ['mp4', 'webm', 'mov', 'm4v'];
+const AUDIO_EXT = ['mp3', 'wav', 'ogg', 'm4a'];
 
-function MediaPlayer({ type, url }) {
-  const ext = (url.split('.').pop() || '').toLowerCase();
-  const isVideo = type === 'VIDEO' || ['mp4', 'webm', 'mov', 'm4v'].includes(ext);
-  const isAudio = type === 'PODCAST' || ['mp3', 'wav', 'ogg', 'm4a'].includes(ext);
-  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].includes(ext);
+function extensionOf(url) {
+  // Ignora a query string (URLs como as do Unsplash não têm extensão literal).
+  const path = url.split('?')[0];
+  const match = /\.([a-z0-9]+)$/i.exec(path);
+  return match ? match[1].toLowerCase() : '';
+}
 
-  if (isVideo) return <video src={url} controls style={mediaStyle} />;
-  if (isAudio) return <audio src={url} controls style={{ width: '100%', maxWidth: 640, margin: '4px 0 8px' }} />;
-  if (isImage) return <img src={url} alt="" style={mediaStyle} />;
+function MediaPlayer({ type, url, coverUrl }) {
+  // Mesmo ficheiro que já aparece no hero — evita mostrar um link redundante.
+  if (url === coverUrl) return null;
+
+  const ext = extensionOf(url);
+  const isVideo = type === 'VIDEO' || VIDEO_EXT.includes(ext);
+  const isAudio = type === 'PODCAST' || AUDIO_EXT.includes(ext);
+  const isImage = type === 'TEXT' || IMAGE_EXT.includes(ext);
+
+  if (isVideo) return <video src={url} controls style={{ width: '100%', maxWidth: 640, borderRadius: 12, margin: '16px 0' }} />;
+  if (isAudio) return <audio src={url} controls style={{ width: '100%', maxWidth: 640, margin: '16px 0' }} />;
+  if (isImage) return <img src={url} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, margin: '16px 0' }} />;
   return <p><a href={url} target="_blank" rel="noreferrer">Abrir media ↗</a></p>;
 }
 
@@ -49,12 +61,25 @@ export default function ContentDetail() {
 
   return (
     <div>
-      <button className="btn" onClick={() => navigate('/')} style={{ marginBottom: 16 }}>← Voltar</button>
-      <span className="badge">{TYPE_LABEL[content.type] || content.type}</span>
-      <h1 className="page-title" style={{ marginTop: 10 }}>{content.title}</h1>
+      <button className="btn" onClick={() => navigate('/')} style={{ marginBottom: 16 }}> Voltar</button>
+
+      {content.imageUrl && (
+        <div
+          className="content-hero"
+          style={{ backgroundImage: `url(${content.imageUrl})` }}
+        >
+          <span className="badge" style={{ background: 'rgba(255,255,255,0.9)' }}>
+            {TYPE_LABEL[content.type] || content.type}
+          </span>
+        </div>
+      )}
+
+      {!content.imageUrl && <span className="badge">{TYPE_LABEL[content.type] || content.type}</span>}
+
+      <h1 className="page-title" style={{ marginTop: 14 }}>{content.title}</h1>
       <p className="muted">{content.theme}{content.region ? ` · ${content.region}` : ''}</p>
 
-      {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} />}
+      {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} coverUrl={content.imageUrl} />}
 
       <p style={{ lineHeight: 1.6 }}>{content.body}</p>
 

@@ -43,6 +43,7 @@ model Content {
   title    String
   body     String
   mediaUrl String?
+  imageUrl String?
   theme    String
   region   String?
 
