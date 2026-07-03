@@ -14,24 +14,24 @@ export default function ContentCard({ item }) {
     : 'linear-gradient(135deg, var(--bordeaux), var(--bordeaux-dark))';
 
   return (
-    <div className="content-card" onClick={() => navigate(`/content/${item.id}`)}>
-      <div className="content-card-media" style={{ backgroundImage: background }}>
-        <div className="content-card-overlay">
-          <div className="content-card-badges">
+    <div
+      className="content-card"
+      style={{ backgroundImage: background }}
+      onClick={() => navigate(`/content/${item.id}`)}
+    >
+      <div className="content-card-overlay">
+        <div className="content-card-badges">
+          <span className="content-card-chip">
+            <TypeIcon size={13} strokeWidth={2.4} /> {TYPE_LABEL[item.type] || item.type}
+          </span>
+          {item.region && (
             <span className="content-card-chip">
-              <TypeIcon size={13} strokeWidth={2.4} /> {TYPE_LABEL[item.type] || item.type}
+              <MapPin size={13} strokeWidth={2.4} /> {item.region}
             </span>
-            {item.region && (
-              <span className="content-card-chip">
-                <MapPin size={13} strokeWidth={2.4} /> {item.region}
-              </span>
-            )}
-          </div>
-          <h3 className="content-card-title">{item.title}</h3>
-          <p className="content-card-desc">{item.theme}</p>
+          )}
         </div>
-      </div>
-      <div className="content-card-footer">
+        <h3 className="content-card-title">{item.title}</h3>
+        <p className="content-card-desc">{item.theme}</p>
         <button className="content-card-btn" onClick={() => navigate(`/content/${item.id}`)}>
           Explorar conteúdo
         </button>

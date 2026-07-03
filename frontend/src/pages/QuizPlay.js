@@ -46,7 +46,7 @@ export default function QuizPlay() {
 
   return (
     <div>
-      <BackButton to="/quizzes" />
+      <BackButton fallback="/quizzes" />
       {quiz.imageUrl && (
         <img src={quiz.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}

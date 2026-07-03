@@ -4,6 +4,7 @@ import { Search, HelpCircle, MessageSquare } from 'lucide-react';
 import { search } from '../api/search';
 import ContentCard from '../components/ContentCard';
 import Avatar from '../components/Avatar';
+import BackButton from '../components/BackButton';
 import { CardGridSkeleton } from '../components/Skeleton';
 
 const ROLE_LABEL = { ADMIN: 'Administrador', USER: 'Membro' };
@@ -43,6 +44,7 @@ export default function SearchResults() {
 
   return (
     <div>
+      <BackButton />
       <h1 className="page-title">Pesquisar</h1>
       <p className="page-subtitle">Encontra conteúdos, quizzes e debates do fórum.</p>
 

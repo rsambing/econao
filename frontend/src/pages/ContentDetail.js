@@ -69,7 +69,7 @@ export default function ContentDetail() {
 
   return (
     <div>
-      <BackButton to="/" />
+      <BackButton fallback="/" />
 
       {content.imageUrl && (
         <div

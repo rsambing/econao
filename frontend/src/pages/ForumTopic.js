@@ -34,7 +34,7 @@ export default function ForumTopic() {
 
   return (
     <div>
-      <BackButton to="/forum" />
+      <BackButton fallback="/forum" />
       {topic.imageUrl && (
         <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}
