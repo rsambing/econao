@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 import { getContent, createComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
@@ -97,7 +97,9 @@ export default function ContentDetail() {
           <div key={c.id} className="comment" style={{ display: 'flex', gap: 10 }}>
             <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={32} />
             <div>
-              <strong>{c.author?.name}</strong>
+              {c.author?.id
+                ? <Link to={`/user/${c.author.id}`} className="author-link"><strong>{c.author.name}</strong></Link>
+                : <strong>{c.author?.name}</strong>}
               <p style={{ margin: '4px 0 0' }}>{c.body}</p>
             </div>
           </div>

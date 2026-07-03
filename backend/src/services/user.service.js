@@ -86,4 +86,39 @@ export class UserService {
 
     return await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
   }
+
+  /**
+   * Perfil público de um utilizador (sem dados sensíveis como o email).
+   * Inclui os tópicos que criou no fórum e a melhor pontuação por quiz.
+   */
+  async getPublicProfile(id) {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, name: true, avatarUrl: true, role: true, createdAt: true }
+    });
+
+    if (!user) return null;
+
+    const forumTopics = await prisma.forumTopic.findMany({
+      where: { authorId: id },
+      select: { id: true, title: true, createdAt: true, _count: { select: { replies: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const attempts = await prisma.quizAttempt.findMany({
+      where: { userId: id },
+      select: { score: true, quiz: { select: { id: true, title: true } } },
+      orderBy: { score: 'desc' }
+    });
+
+    // Guarda apenas a melhor pontuação por quiz (attempts já vem ordenado desc).
+    const bestByQuiz = new Map();
+    for (const a of attempts) {
+      if (a.quiz && !bestByQuiz.has(a.quiz.id)) {
+        bestByQuiz.set(a.quiz.id, { quizId: a.quiz.id, title: a.quiz.title, score: a.score });
+      }
+    }
+
+    return { user, forumTopics, bestScores: [...bestByQuiz.values()] };
+  }
 }

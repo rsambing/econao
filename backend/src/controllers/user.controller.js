@@ -41,6 +41,30 @@ export class UserController
         }
     }
 
+    async getPublicProfile(req, res)
+    {
+        try
+        {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return res.status(400).json({ error: 'ID inválido' });
+            }
+
+            const profile = await userService.getPublicProfile(id);
+
+            if (!profile) {
+                return res.status(404).json({ error: 'Utilizador não encontrado' });
+            }
+
+            res.status(200).json(profile);
+        }
+        catch (error)
+        {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     async getAllUsers(req, res)
     {
         try

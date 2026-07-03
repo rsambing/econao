@@ -3,7 +3,10 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, HelpCircle, MessageSquare } from 'lucide-react';
 import { search } from '../api/search';
 import ContentCard from '../components/ContentCard';
+import Avatar from '../components/Avatar';
 import { CardGridSkeleton } from '../components/Skeleton';
+
+const ROLE_LABEL = { ADMIN: 'Administrador', USER: 'Membro' };
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +38,7 @@ export default function SearchResults() {
   };
 
   const total = results
-    ? results.content.length + results.quizzes.length + results.topics.length
+    ? results.content.length + results.quizzes.length + results.topics.length + (results.users?.length || 0)
     : 0;
 
   return (
@@ -66,6 +69,25 @@ export default function SearchResults() {
               ? `Sem resultados para "${results.query}".`
               : `${total} resultado${total > 1 ? 's' : ''} para "${results.query}".`}
           </p>
+
+          {results.users?.length > 0 && (
+            <section style={{ marginBottom: 32 }}>
+              <h2 className="search-section-title">Pessoas</h2>
+              <div className="list">
+                {results.users.map((u) => (
+                  <button key={u.id} className="search-result-row" onClick={() => navigate(`/user/${u.id}`)}>
+                    <Avatar name={u.name} url={u.avatarUrl} size={40} />
+                    <span>
+                      <strong>{u.name}</strong>
+                      <span className="muted" style={{ display: 'block', fontSize: 13 }}>
+                        {ROLE_LABEL[u.role] || u.role}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           {results.content.length > 0 && (
             <section style={{ marginBottom: 32 }}>

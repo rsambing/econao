@@ -42,6 +42,25 @@ userRouter.post(
 
 /**
  * @openapi
+ * /users/{id}/public:
+ *   get:
+ *     summary: Perfil público de um utilizador (sem dados sensíveis)
+ *     tags:
+ *       - Utilizadores
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Perfil público (nome, avatar, papel, tópicos e pontuações)
+ */
+userRouter.get('/users/:id/public', userController.getPublicProfile);
+
+/**
+ * @openapi
  * /users/{id}:
  *   get:
  *     summary: Obter utilizador por ID

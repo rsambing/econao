@@ -10,12 +10,12 @@ export class SearchService {
   async searchAll(term) {
     const q = (term || '').trim();
     if (!q) {
-      return { query: '', content: [], quizzes: [], topics: [] };
+      return { query: '', content: [], quizzes: [], topics: [], users: [] };
     }
 
     const contains = { contains: q, mode: 'insensitive' };
 
-    const [content, quizzes, topics] = await Promise.all([
+    const [content, quizzes, topics, users] = await Promise.all([
       prisma.content.findMany({
         where: {
           OR: [
@@ -46,9 +46,15 @@ export class SearchService {
         include: { ...AUTHOR_SELECT, _count: { select: { replies: true } } },
         orderBy: { createdAt: 'desc' },
         take: 20
+      }),
+      prisma.user.findMany({
+        where: { name: contains },
+        select: { id: true, name: true, avatarUrl: true, role: true },
+        orderBy: { name: 'asc' },
+        take: 20
       })
     ]);
 
-    return { query: q, content, quizzes, topics };
+    return { query: q, content, quizzes, topics, users };
   }
 }

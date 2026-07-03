@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getTopic, createReply } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
@@ -41,7 +41,10 @@ export default function ForumTopic() {
       <h1 className="page-title">{topic.title}</h1>
       <p className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <Avatar name={topic.author?.name} url={topic.author?.avatarUrl} size={20} />
-        por {topic.author?.name}
+        por{' '}
+        {topic.author?.id
+          ? <Link to={`/user/${topic.author.id}`} className="author-link">{topic.author.name}</Link>
+          : topic.author?.name}
       </p>
       <p style={{ lineHeight: 1.6 }}>{topic.description}</p>
 
@@ -51,7 +54,9 @@ export default function ForumTopic() {
           <div key={r.id} className="comment" style={{ display: 'flex', gap: 10 }}>
             <Avatar name={r.author?.name} url={r.author?.avatarUrl} size={32} />
             <div>
-              <strong>{r.author?.name}</strong>
+              {r.author?.id
+                ? <Link to={`/user/${r.author.id}`} className="author-link"><strong>{r.author.name}</strong></Link>
+                : <strong>{r.author?.name}</strong>}
               <p style={{ margin: '4px 0 0' }}>{r.body}</p>
             </div>
           </div>
