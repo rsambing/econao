@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, Image, Linking, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,11 +20,16 @@ function ContentMedia({ type, url, primary }: { type: string; url: string; prima
   if (isImage && type !== 'VIDEO' && type !== 'PODCAST') {
     return <Image source={{ uri: url }} style={styles.media} resizeMode="cover" />;
   }
+  const iconName = type === 'VIDEO' || type === 'PODCAST' ? 'play-circle-outline' : 'open-outline';
+  const label = type === 'VIDEO' ? 'Reproduzir vídeo' : type === 'PODCAST' ? 'Ouvir áudio' : 'Abrir media';
+
   return (
-    <TouchableOpacity onPress={() => Linking.openURL(url)} style={[styles.mediaLink, { borderColor: primary }]}>
-      <Text style={{ color: primary, fontWeight: '600' }}>
-        {type === 'VIDEO' ? '▶ Reproduzir vídeo' : type === 'PODCAST' ? '▶ Ouvir áudio' : 'Abrir media ↗'}
-      </Text>
+    <TouchableOpacity
+      onPress={() => Linking.openURL(url)}
+      style={[styles.mediaLink, { borderColor: primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }]}
+    >
+      <Ionicons name={iconName} size={18} color={primary} />
+      <Text style={{ color: primary, fontWeight: '600' }}>{label}</Text>
     </TouchableOpacity>
   );
 }

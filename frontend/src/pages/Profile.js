@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Pencil, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { uploadMedia } from '../api/upload';
 import Avatar from '../components/Avatar';
@@ -37,7 +38,7 @@ export default function Profile() {
           <div className="profile-avatar-wrapper">
             <Avatar name={user.name} url={user.avatarUrl} size={96} />
             <label className="profile-avatar-edit" title="Alterar foto">
-              {uploading ? '…' : '✎'}
+              {uploading ? <Loader2 size={14} className="spin" /> : <Pencil size={13} strokeWidth={2.4} />}
               <input
                 type="file"
                 accept="image/*"

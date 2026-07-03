@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { X, Plus } from 'lucide-react';
 import { listQuizzes, createQuiz } from '../../api/quiz';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/BackButton';
 
 const EMPTY_QUESTION = () => ({ text: '', options: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] });
 
 export default function AdminQuiz() {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
   const [title, setTitle] = useState('');
@@ -24,7 +24,7 @@ export default function AdminQuiz() {
     return (
       <div>
         <p className="error-text">Acesso restrito a administradores.</p>
-        <button className="btn" onClick={() => navigate('/')}>Voltar</button>
+        <BackButton to="/" />
       </div>
     );
   }
@@ -143,13 +143,17 @@ export default function AdminQuiz() {
                   style={{ flex: 1 }}
                 />
                 {q.options.length > 2 && (
-                  <button type="button" className="btn danger" onClick={() => removeOption(qIndex, oIndex)}>×</button>
+                  <button type="button" className="btn danger" onClick={() => removeOption(qIndex, oIndex)} aria-label="Remover opção">
+                    <X size={15} strokeWidth={2.4} />
+                  </button>
                 )}
               </div>
             ))}
 
             <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
-              <button type="button" className="btn" onClick={() => addOption(qIndex)}>+ Opção</button>
+              <button type="button" className="btn" onClick={() => addOption(qIndex)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Plus size={15} strokeWidth={2.4} /> Opção
+              </button>
               {questions.length > 1 && (
                 <button type="button" className="btn danger" onClick={() => removeQuestion(qIndex)}>Remover pergunta</button>
               )}
@@ -157,7 +161,9 @@ export default function AdminQuiz() {
           </div>
         ))}
 
-        <button type="button" className="btn" onClick={addQuestion} style={{ marginBottom: 16 }}>+ Adicionar pergunta</button>
+        <button type="button" className="btn" onClick={addQuestion} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+          <Plus size={15} strokeWidth={2.4} /> Adicionar pergunta
+        </button>
 
         {error && <div className="error-text">{error}</div>}
         <button type="submit" className="btn primary" disabled={submitting}>

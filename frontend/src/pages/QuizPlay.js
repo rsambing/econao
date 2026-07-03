@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getQuiz, submitAttempt, getRanking } from '../api/quiz';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
+import BackButton from '../components/BackButton';
 
 export default function QuizPlay() {
   const { id } = useParams();
@@ -45,7 +46,7 @@ export default function QuizPlay() {
 
   return (
     <div>
-      <button className="btn" onClick={() => navigate('/quizzes')} style={{ marginBottom: 16 }}> Voltar</button>
+      <BackButton to="/quizzes" />
       {quiz.imageUrl && (
         <img src={quiz.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}

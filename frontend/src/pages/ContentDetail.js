@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 import { getContent, createComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
+import BackButton from '../components/BackButton';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 
@@ -30,7 +32,13 @@ function MediaPlayer({ type, url, coverUrl }) {
   if (isVideo) return <video src={url} controls style={{ width: '100%', maxWidth: 640, borderRadius: 12, margin: '16px 0' }} />;
   if (isAudio) return <audio src={url} controls style={{ width: '100%', maxWidth: 640, margin: '16px 0' }} />;
   if (isImage) return <img src={url} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, margin: '16px 0' }} />;
-  return <p><a href={url} target="_blank" rel="noreferrer">Abrir media ↗</a></p>;
+  return (
+    <p>
+      <a href={url} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        Abrir media <ExternalLink size={15} strokeWidth={2.2} />
+      </a>
+    </p>
+  );
 }
 
 export default function ContentDetail() {
@@ -61,7 +69,7 @@ export default function ContentDetail() {
 
   return (
     <div>
-      <button className="btn" onClick={() => navigate('/')} style={{ marginBottom: 16 }}> Voltar</button>
+      <BackButton to="/" />
 
       {content.imageUrl && (
         <div

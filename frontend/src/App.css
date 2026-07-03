@@ -131,6 +131,38 @@ body {
   border-color: var(--bad);
 }
 
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 8px 10px 8px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.btn-back:hover {
+  background: var(--grey-light);
+}
+
+.auth-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.auth-back:hover {
+  background: var(--grey-light);
+}
+
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -363,6 +395,16 @@ body {
   font-size: 14px;
 }
 
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Skeleton loading */
 .skeleton {
   position: relative;
@@ -471,6 +513,7 @@ body {
 
 /* Auth (Login / Registo / Recuperar senha) — cartão centrado estilo Jira */
 .auth-shell {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;

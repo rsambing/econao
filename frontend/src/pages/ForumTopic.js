@@ -4,6 +4,7 @@ import { getTopic, createReply } from '../api/forum';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
+import BackButton from '../components/BackButton';
 
 export default function ForumTopic() {
   const { id } = useParams();
@@ -33,7 +34,7 @@ export default function ForumTopic() {
 
   return (
     <div>
-      <button className="btn" onClick={() => navigate('/forum')} style={{ marginBottom: 16 }}> Voltar</button>
+      <BackButton to="/forum" />
       {topic.imageUrl && (
         <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
       )}

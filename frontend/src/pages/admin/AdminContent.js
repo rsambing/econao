@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 import { listContent, createContent, updateContent, deleteContent } from '../../api/content';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/BackButton';
 
 const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '' };
 
 export default function AdminContent() {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -25,7 +25,7 @@ export default function AdminContent() {
     return (
       <div>
         <p className="error-text">Acesso restrito a administradores.</p>
-        <button className="btn" onClick={() => navigate('/')}>Voltar</button>
+        <BackButton to="/" />
       </div>
     );
   }
@@ -128,7 +128,11 @@ export default function AdminContent() {
           />
           {form.imageUrl && !coverFile && (
             <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
-              Capa atual: <a href={form.imageUrl} target="_blank" rel="noreferrer">ver ↗</a> (escolhe um ficheiro para substituir)
+              Capa atual:{' '}
+              <a href={form.imageUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                ver <ExternalLink size={13} strokeWidth={2.2} />
+              </a>{' '}
+              (escolhe um ficheiro para substituir)
             </p>
           )}
         </div>
@@ -141,7 +145,11 @@ export default function AdminContent() {
           />
           {form.mediaUrl && !file && (
             <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
-              Media atual: <a href={form.mediaUrl} target="_blank" rel="noreferrer">ver ↗</a> (escolhe um ficheiro para substituir)
+              Media atual:{' '}
+              <a href={form.mediaUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                ver <ExternalLink size={13} strokeWidth={2.2} />
+              </a>{' '}
+              (escolhe um ficheiro para substituir)
             </p>
           )}
         </div>
