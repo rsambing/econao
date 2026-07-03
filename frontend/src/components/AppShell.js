@@ -47,9 +47,9 @@ export default function AppShell() {
               to={to}
               end={end}
               className={({ isActive }) => `fb-nav-icon${isActive ? ' active' : ''}`}
-              title={label}
             >
-              <Icon size={22} strokeWidth={2.2} />
+              <Icon size={20} strokeWidth={2.2} />
+              <span>{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -98,36 +98,9 @@ export default function AppShell() {
         </div>
       </header>
 
-      <div className="fb-body">
-        <aside className="fb-sidebar">
-          {user && (
-            <NavLink to="/profile" className="fb-sidebar-item fb-sidebar-profile">
-              <Avatar name={user.name} url={user.avatarUrl} size={28} />
-              <span>{user.name}</span>
-            </NavLink>
-          )}
-          {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => `fb-sidebar-item${isActive ? ' active' : ''}`}>
-              <Icon size={20} /> <span>{label}</span>
-            </NavLink>
-          ))}
-          {user?.role === 'ADMIN' && (
-            <>
-              <div className="fb-sidebar-divider" />
-              <NavLink to="/admin" className={({ isActive }) => `fb-sidebar-item${isActive ? ' active' : ''}`}>
-                <FileText size={20} /> <span>Gestão de Conteúdos</span>
-              </NavLink>
-              <NavLink to="/admin/quiz" className={({ isActive }) => `fb-sidebar-item${isActive ? ' active' : ''}`}>
-                <LayoutGrid size={20} /> <span>Gestão de Quizzes</span>
-              </NavLink>
-            </>
-          )}
-        </aside>
-
-        <main className="fb-main">
-          <Outlet />
-        </main>
-      </div>
+      <main className="fb-main">
+        <Outlet />
+      </main>
     </div>
   );
 }
