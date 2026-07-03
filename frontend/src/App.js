@@ -12,6 +12,7 @@ import Quizzes from './pages/Quizzes';
 import QuizPlay from './pages/QuizPlay';
 import Forum from './pages/Forum';
 import ForumTopic from './pages/ForumTopic';
+import SearchResults from './pages/SearchResults';
 import Profile from './pages/Profile';
 import AdminContent from './pages/admin/AdminContent';
 import AdminQuiz from './pages/admin/AdminQuiz';
@@ -38,6 +39,7 @@ function App() {
           <Route path="/quiz/:id" element={<QuizPlay />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/forum/:id" element={<ForumTopic />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminContent />} />
           <Route path="/admin/quiz" element={<AdminQuiz />} />

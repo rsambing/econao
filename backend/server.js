@@ -10,6 +10,7 @@ import contentRouter from './src/routes/content.route.js';
 import quizRouter from './src/routes/quiz.route.js';
 import forumRouter from './src/routes/forum.route.js';
 import uploadRouter from './src/routes/upload.route.js';
+import searchRouter from './src/routes/search.route.js';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(contentRouter);
 app.use(quizRouter);
 app.use(forumRouter);
 app.use(uploadRouter);
+app.use(searchRouter);
 
 app.get('/', (req, res) => {
   res.send('EconAO API — Economia com História: Angola');

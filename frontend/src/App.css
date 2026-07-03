@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   --bordeaux: #7a1f2b;
@@ -93,27 +93,37 @@ body {
 }
 
 .page-title {
-  margin-bottom: 4px;
-  font-size: 28px;
+  margin: 0 0 6px;
+  font-size: 34px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.9px;
+  line-height: 1.1;
 }
 
 .page-subtitle {
   color: var(--muted);
-  margin: 0 0 24px;
+  margin: 0 0 28px;
+  font-size: 16px;
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid var(--border);
   background: var(--surface);
-  padding: 9px 16px;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
   font-size: 14px;
   color: var(--text);
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition: background 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
+}
+
+.btn:hover {
+  background: var(--grey-light);
 }
 
 .btn.primary {
@@ -129,6 +139,28 @@ body {
 .btn.danger {
   color: var(--bad);
   border-color: var(--bad);
+  background: var(--surface);
+}
+
+.btn.danger:hover {
+  background: #fdecea;
+}
+
+/* Botão em texto puro (estilo "Sign in" do Jira) */
+.btn-link {
+  border: none;
+  background: transparent;
+  color: var(--bordeaux);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  background: var(--bordeaux-light);
 }
 
 .btn-back {
@@ -294,6 +326,75 @@ body {
   font-weight: 600;
   background: var(--bordeaux-light);
   color: var(--bordeaux);
+}
+
+/* Página de pesquisa */
+.search-page-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 8px 8px 18px;
+  margin-bottom: 20px;
+  color: var(--muted);
+}
+
+.search-page-box:focus-within {
+  border-color: var(--bordeaux);
+  box-shadow: 0 0 0 1px var(--bordeaux);
+}
+
+.search-page-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.search-section-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: background 0.12s ease;
+}
+
+.search-result-row:hover {
+  background: var(--grey-light);
+}
+
+.search-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bordeaux-light);
+  color: var(--bordeaux);
+  flex-shrink: 0;
 }
 
 .form {
@@ -570,8 +671,8 @@ body {
 .auth-btn-primary {
   width: 100%;
   border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
+  border-radius: 999px;
+  padding: 13px 20px;
   font-size: 15px;
   font-weight: 700;
   color: #fff;
@@ -615,8 +716,8 @@ body {
 .auth-btn-outline {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 11px 20px;
+  border-radius: 999px;
+  padding: 12px 20px;
   font-size: 14px;
   font-weight: 700;
   color: var(--text);
@@ -730,9 +831,50 @@ body {
   border-radius: 3px 3px 0 0;
 }
 
+/* Barra de pesquisa global na navbar */
+.fb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--grey-light);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 8px 14px;
+  width: 240px;
+  color: var(--muted);
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.fb-search:focus-within {
+  background: var(--surface);
+  border-color: var(--bordeaux);
+}
+
+.fb-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  width: 100%;
+  color: var(--text);
+}
+
+.fb-search-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--grey-light);
+}
+
 .fb-guest-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
 }
 
 .fb-user-menu {
@@ -817,6 +959,16 @@ body {
   margin: 0 auto;
   padding: 32px 20px 64px;
   width: 100%;
+}
+
+@media (max-width: 860px) {
+  .fb-search {
+    display: none;
+  }
+
+  .fb-search-mobile {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 720px) {

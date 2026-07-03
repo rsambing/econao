@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Compass, HelpCircle, MessageSquare, ChevronDown, LogOut, User, LayoutGrid, FileText } from 'lucide-react';
+import { Compass, HelpCircle, MessageSquare, ChevronDown, LogOut, User, LayoutGrid, FileText, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Avatar from './Avatar';
 
@@ -14,7 +14,14 @@ export default function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const menuRef = useRef(null);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
+  };
 
   useEffect(() => {
     const onClickOutside = (e) => {
@@ -55,6 +62,20 @@ export default function AppShell() {
         </nav>
 
         <div className="fb-topbar-right">
+          <form className="fb-search" onSubmit={handleSearch}>
+            <Search size={18} strokeWidth={2.2} />
+            <input
+              type="search"
+              placeholder="Pesquisar na plataforma..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Pesquisar"
+            />
+          </form>
+          <NavLink to="/search" className="fb-search-mobile" aria-label="Pesquisar">
+            <Search size={20} strokeWidth={2.2} />
+          </NavLink>
+
           {user ? (
             <div className="fb-user-menu" ref={menuRef}>
               <button className="fb-user-trigger" onClick={() => setMenuOpen((o) => !o)}>
@@ -91,7 +112,7 @@ export default function AppShell() {
             </div>
           ) : (
             <div className="fb-guest-actions">
-              <NavLink to="/login" className="btn">Entrar</NavLink>
+              <NavLink to="/login" className="btn-link">Entrar</NavLink>
               <NavLink to="/register" className="btn primary">Registar</NavLink>
             </div>
           )}
