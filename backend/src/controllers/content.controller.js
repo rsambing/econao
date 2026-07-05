@@ -15,7 +15,7 @@ export class ContentController {
   async getAllContent(req, res) {
     try {
       const { type, theme } = req.query;
-      const content = await contentService.getAllContent({ type, theme });
+      const content = await contentService.getAllContent({ type, theme }, !!req.user);
       res.status(200).json(content);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -27,7 +27,7 @@ export class ContentController {
       const id = Number(req.params.id);
       if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
 
-      const content = await contentService.getContentById(id);
+      const content = await contentService.getContentById(id, !!req.user);
       if (!content) return res.status(404).json({ error: 'Conteúdo não encontrado' });
 
       res.status(200).json(content);

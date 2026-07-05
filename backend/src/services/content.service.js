@@ -8,6 +8,19 @@ function toMediaCreate(media) {
   return media.map((m, i) => ({ url: m.url, type: m.type || 'IMAGE', order: i }));
 }
 
+/**
+ * Conteúdo "Jindungo" (isExclusive) só mostra o corpo/media/galeria/comentários
+ * a quem tem sessão iniciada. Para visitantes devolve apenas o teaser
+ * (título, tema, região, capa) com `locked: true`.
+ */
+function applyExclusiveGate(content, isAuthenticated) {
+  if (!content.isExclusive || isAuthenticated) {
+    return { ...content, locked: false };
+  }
+  const { body, mediaUrl, media, comments, ...teaser } = content;
+  return { ...teaser, body: null, mediaUrl: null, media: [], comments: [], locked: true };
+}
+
 export class ContentService {
   async createContent(data, authorId) {
     const { media, ...rest } = data;
@@ -21,8 +34,8 @@ export class ContentService {
     });
   }
 
-  async getAllContent({ type, theme } = {}) {
-    return prisma.content.findMany({
+  async getAllContent({ type, theme } = {}, isAuthenticated = false) {
+    const items = await prisma.content.findMany({
       where: {
         ...(type ? { type } : {}),
         ...(theme ? { theme } : {})
@@ -30,10 +43,11 @@ export class ContentService {
       include: { ...AUTHOR_SELECT, ...MEDIA_INCLUDE },
       orderBy: { createdAt: 'desc' }
     });
+    return items.map((item) => applyExclusiveGate(item, isAuthenticated));
   }
 
-  async getContentById(id) {
-    return prisma.content.findUnique({
+  async getContentById(id, isAuthenticated = false) {
+    const content = await prisma.content.findUnique({
       where: { id },
       include: {
         ...AUTHOR_SELECT,
@@ -44,6 +58,8 @@ export class ContentService {
         }
       }
     });
+    if (!content) return null;
+    return applyExclusiveGate(content, isAuthenticated);
   }
 
   async updateContent(id, data) {

@@ -62,6 +62,7 @@ export const createContentSchema = z.object({
   imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres'),
   region: z.string().optional(),
+  isExclusive: z.boolean().optional(),
   media: z.array(mediaItemSchema).optional()
 });
 
@@ -73,6 +74,7 @@ export const updateContentSchema = z.object({
   imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres').optional(),
   region: z.string().optional(),
+  isExclusive: z.boolean().optional(),
   media: z.array(mediaItemSchema).optional()
 }).strict();
 

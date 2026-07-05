@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Flame } from 'lucide-react';
 import { listContent, createContent, updateContent, deleteContent } from '../../api/content';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
 import MediaGallery from '../../components/MediaGallery';
 
-const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '' };
+const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '', isExclusive: false };
 
 const mediaTypeOf = (f) =>
   f.type.startsWith('video') ? 'VIDEO' : f.type.startsWith('audio') ? 'AUDIO' : 'IMAGE';
@@ -99,7 +99,8 @@ export default function AdminContent() {
       mediaUrl: item.mediaUrl || '',
       imageUrl: item.imageUrl || '',
       theme: item.theme,
-      region: item.region || ''
+      region: item.region || '',
+      isExclusive: !!item.isExclusive
     });
   };
 
@@ -204,6 +205,16 @@ export default function AdminContent() {
           <label>Região (opcional)</label>
           <input value={form.region} onChange={handleChange('region')} />
         </div>
+        <div className="form-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={form.isExclusive}
+              onChange={(e) => setForm((f) => ({ ...f, isExclusive: e.target.checked }))}
+            />
+            <Flame size={15} strokeWidth={2.4} /> Conteúdo Jindungo (exclusivo para utilizadores com conta)
+          </label>
+        </div>
         {error && <div className="error-text">{error}</div>}
         <div style={{ display: 'flex', gap: 10 }}>
           <button type="submit" className="btn primary" disabled={uploading}>
@@ -215,7 +226,7 @@ export default function AdminContent() {
 
       <table className="table">
         <thead>
-          <tr><th>Título</th><th>Tipo</th><th>Tema</th><th></th></tr>
+          <tr><th>Título</th><th>Tipo</th><th>Tema</th><th>Jindungo</th><th></th></tr>
         </thead>
         <tbody>
           {items.map((item) => (
@@ -223,6 +234,7 @@ export default function AdminContent() {
               <td>{item.title}</td>
               <td>{item.type}</td>
               <td>{item.theme}</td>
+              <td>{item.isExclusive && <Flame size={16} strokeWidth={2.4} color="var(--bordeaux)" />}</td>
               <td style={{ display: 'flex', gap: 8 }}>
                 <button className="btn" onClick={() => handleEdit(item)}>Editar</button>
                 <button className="btn danger" onClick={() => handleDelete(item.id)}>Eliminar</button>

@@ -3,6 +3,7 @@ import { ContentController } from '../controllers/content.controller.js';
 import { CommentController } from '../controllers/comment.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
 import { authenticate } from '../middlewares/authenticate.middleware.js';
+import { optionalAuthenticate } from '../middlewares/optional-authenticate.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { createContentSchema, updateContentSchema, createCommentSchema } from '../schemas/validation.schemas.js';
 
@@ -20,7 +21,7 @@ const commentController = new CommentController();
  *       200:
  *         description: Lista de conteúdos
  */
-contentRouter.get('/content', contentController.getAllContent);
+contentRouter.get('/content', optionalAuthenticate, contentController.getAllContent);
 
 /**
  * @openapi
@@ -36,7 +37,7 @@ contentRouter.get('/content', contentController.getAllContent);
  *     responses:
  *       200: { description: Conteúdo encontrado }
  */
-contentRouter.get('/content/:id', contentController.getContentById);
+contentRouter.get('/content/:id', optionalAuthenticate, contentController.getContentById);
 
 /**
  * @openapi

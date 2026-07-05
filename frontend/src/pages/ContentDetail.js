@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Flame, Lock } from 'lucide-react';
 import { getContent, createComment, updateComment, deleteComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
@@ -86,44 +86,67 @@ export default function ContentDetail() {
       {!content.imageUrl && <span className="badge">{TYPE_LABEL[content.type] || content.type}</span>}
 
       <h1 className="page-title" style={{ marginTop: 14 }}>{content.title}</h1>
-      <p className="muted">{content.theme}{content.region ? ` · ${content.region}` : ''}</p>
+      <p className="muted">
+        {content.theme}{content.region ? ` · ${content.region}` : ''}
+        {content.isExclusive && (
+          <span className="content-card-chip jindungo" style={{ marginLeft: 10 }}>
+            <Flame size={13} strokeWidth={2.4} /> Jindungo
+          </span>
+        )}
+      </p>
 
-      {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} coverUrl={content.imageUrl} />}
-
-      <p style={{ lineHeight: 1.6 }}>{content.body}</p>
-
-      {content.media?.length > 0 && <MediaGallery items={content.media} height={220} />}
-
-      <h2 style={{ marginTop: 32, fontSize: 18 }}>Comentários</h2>
-      <div className="list">
-        {content.comments?.map((c) => (
-          <CommentItem
-            key={c.id}
-            item={c}
-            onSave={async (id, body) => { await updateComment(id, body); load(); }}
-            onDelete={async (id) => { await deleteComment(id); load(); }}
-          />
-        ))}
-        {(!content.comments || content.comments.length === 0) && <p className="muted">Sê o primeiro a comentar.</p>}
-      </div>
-
-      {user ? (
-        <form className="form" onSubmit={handleComment} style={{ marginTop: 16 }}>
-          <textarea
-            className="input"
-            rows={3}
-            placeholder="Escreve um comentário..."
-            value={commentBody}
-            onChange={(e) => setCommentBody(e.target.value)}
-            style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10, fontFamily: 'inherit' }}
-          />
-          {error && <div className="error-text">{error}</div>}
-          <button type="submit" className="btn primary">Publicar Comentário</button>
-        </form>
+      {content.locked ? (
+        <div className="jindungo-lock-card">
+          <Lock size={28} strokeWidth={1.8} />
+          <h2>Conteúdo Jindungo</h2>
+          <p className="muted">
+            Este conteúdo é exclusivo para utilizadores com conta. Entra ou regista-te para ver tudo.
+          </p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 6 }}>
+            <button className="btn primary" onClick={() => navigate('/login')}>Entrar</button>
+            <button className="btn" onClick={() => navigate('/register')}>Criar conta</button>
+          </div>
+        </div>
       ) : (
-        <p className="muted" style={{ marginTop: 16 }}>
-          <button className="btn" onClick={() => navigate('/login')}>Entra</button> para comentar.
-        </p>
+        <>
+          {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} coverUrl={content.imageUrl} />}
+
+          <p style={{ lineHeight: 1.6 }}>{content.body}</p>
+
+          {content.media?.length > 0 && <MediaGallery items={content.media} height={220} />}
+
+          <h2 style={{ marginTop: 32, fontSize: 18 }}>Comentários</h2>
+          <div className="list">
+            {content.comments?.map((c) => (
+              <CommentItem
+                key={c.id}
+                item={c}
+                onSave={async (id, body) => { await updateComment(id, body); load(); }}
+                onDelete={async (id) => { await deleteComment(id); load(); }}
+              />
+            ))}
+            {(!content.comments || content.comments.length === 0) && <p className="muted">Sê o primeiro a comentar.</p>}
+          </div>
+
+          {user ? (
+            <form className="form" onSubmit={handleComment} style={{ marginTop: 16 }}>
+              <textarea
+                className="input"
+                rows={3}
+                placeholder="Escreve um comentário..."
+                value={commentBody}
+                onChange={(e) => setCommentBody(e.target.value)}
+                style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10, fontFamily: 'inherit' }}
+              />
+              {error && <div className="error-text">{error}</div>}
+              <button type="submit" className="btn primary">Publicar Comentário</button>
+            </form>
+          ) : (
+            <p className="muted" style={{ marginTop: 16 }}>
+              <button className="btn" onClick={() => navigate('/login')}>Entra</button> para comentar.
+            </p>
+          )}
+        </>
       )}
     </div>
   );

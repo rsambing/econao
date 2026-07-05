@@ -115,7 +115,9 @@ async function main() {
       theme: 'Reformas Económicas',
       region: 'Nacional',
       mediaUrl: SAMPLE_VIDEO,
-      imageUrl: 'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?auto=format&fit=crop&w=900&q=80'
+      imageUrl: 'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?auto=format&fit=crop&w=900&q=80',
+      // Conteúdo Jindungo (exclusivo) de exemplo — só visível a quem tem conta.
+      isExclusive: true
     }
   ];
 
@@ -125,16 +127,17 @@ async function main() {
     if (!existing) {
       contentRow = await prisma.content.create({ data: { ...c, authorId: admin.id } });
       console.log('✓ Conteúdo:', c.title);
-    } else if (!existing.mediaUrl || !existing.imageUrl) {
-      // Backfill de mediaUrl/imageUrl em conteúdos de execuções anteriores do seed.
+    } else if (!existing.mediaUrl || !existing.imageUrl || (c.isExclusive && !existing.isExclusive)) {
+      // Backfill de mediaUrl/imageUrl/isExclusive em conteúdos de execuções anteriores do seed.
       contentRow = await prisma.content.update({
         where: { id: existing.id },
         data: {
           mediaUrl: existing.mediaUrl || c.mediaUrl,
-          imageUrl: existing.imageUrl || c.imageUrl
+          imageUrl: existing.imageUrl || c.imageUrl,
+          isExclusive: c.isExclusive ?? existing.isExclusive
         }
       });
-      console.log('✓ Conteúdo atualizado (mediaUrl/imageUrl):', c.title);
+      console.log('✓ Conteúdo atualizado (mediaUrl/imageUrl/isExclusive):', c.title);
     }
 
     // Um comentário de exemplo por conteúdo, de utilizadores diferentes

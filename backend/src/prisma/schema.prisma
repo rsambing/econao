@@ -46,6 +46,8 @@ model Content {
   imageUrl String?
   theme    String
   region   String?
+  // Conteúdo "Jindungo": só é acessível na íntegra a utilizadores autenticados.
+  isExclusive Boolean @default(false)
 
   authorId Int
   author   User        @relation(fields: [authorId], references: [id])

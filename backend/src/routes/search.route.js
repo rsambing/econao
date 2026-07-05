@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SearchController } from '../controllers/search.controller.js';
+import { optionalAuthenticate } from '../middlewares/optional-authenticate.middleware.js';
 
 const searchRouter = Router();
 const searchController = new SearchController();
@@ -19,6 +20,6 @@ const searchController = new SearchController();
  *       200:
  *         description: Resultados agrupados por tipo
  */
-searchRouter.get('/search', searchController.search);
+searchRouter.get('/search', optionalAuthenticate, searchController.search);
 
 export default searchRouter;

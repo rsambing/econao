@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, FileText, Headphones, MapPin } from 'lucide-react';
+import { Play, FileText, Headphones, MapPin, Flame } from 'lucide-react';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
 const TYPE_ICON = { VIDEO: Play, TEXT: FileText, PODCAST: Headphones };
@@ -27,6 +27,11 @@ export default function ContentCard({ item }) {
           {item.region && (
             <span className="content-card-chip">
               <MapPin size={13} strokeWidth={2.4} /> {item.region}
+            </span>
+          )}
+          {item.isExclusive && (
+            <span className="content-card-chip jindungo">
+              <Flame size={13} strokeWidth={2.4} /> Jindungo
             </span>
           )}
         </div>

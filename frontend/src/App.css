@@ -262,6 +262,36 @@ body {
   border-radius: 999px;
 }
 
+.content-card-chip.jindungo {
+  background: #e8590c;
+  color: #fff;
+}
+
+.jindungo-lock-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 24px;
+  margin-top: 20px;
+  color: #e8590c;
+}
+
+.jindungo-lock-card h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.jindungo-lock-card p {
+  max-width: 420px;
+}
+
 .content-card-title {
   margin: 0 0 4px;
   font-size: 19px;
@@ -479,6 +509,18 @@ body {
   font-weight: 600;
   margin-bottom: 6px;
   font-size: 14px;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
 }
 
 .form-group input,

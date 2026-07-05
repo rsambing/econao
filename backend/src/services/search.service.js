@@ -7,7 +7,7 @@ export class SearchService {
    * Pesquisa global em conteúdos, quizzes e tópicos do fórum.
    * A pesquisa é case-insensitive e cobre os campos textuais mais relevantes.
    */
-  async searchAll(term) {
+  async searchAll(term, isAuthenticated = false) {
     const q = (term || '').trim();
     if (!q) {
       return { query: '', content: [], quizzes: [], topics: [], users: [] };
@@ -55,6 +55,11 @@ export class SearchService {
       })
     ]);
 
-    return { query: q, content, quizzes, topics, users };
+    // Conteúdo Jindungo (exclusivo) não revela o corpo a visitantes, mesmo na pesquisa.
+    const gatedContent = content.map((item) =>
+      item.isExclusive && !isAuthenticated ? { ...item, body: null, mediaUrl: null, locked: true } : item
+    );
+
+    return { query: q, content: gatedContent, quizzes, topics, users };
   }
 }
