@@ -114,4 +114,33 @@ contentRouter.post(
   commentController.createComment
 );
 
+/**
+ * @openapi
+ * /comments/{commentId}:
+ *   put:
+ *     summary: Editar comentário (autor ou ADMIN)
+ *     tags: [Comentários]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Comentário atualizado }
+ */
+contentRouter.put(
+  '/comments/:commentId',
+  authenticate,
+  validateRequest(createCommentSchema),
+  commentController.updateComment
+);
+
+/**
+ * @openapi
+ * /comments/{commentId}:
+ *   delete:
+ *     summary: Eliminar comentário (autor ou ADMIN)
+ *     tags: [Comentários]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       204: { description: Comentário eliminado }
+ */
+contentRouter.delete('/comments/:commentId', authenticate, commentController.deleteComment);
+
 export default contentRouter;

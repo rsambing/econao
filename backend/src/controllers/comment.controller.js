@@ -26,4 +26,28 @@ export class CommentController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  async updateComment(req, res) {
+    try {
+      const id = Number(req.params.commentId);
+      if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+      const comment = await commentService.updateComment(id, req.user, req.body.body);
+      res.status(200).json(comment);
+    } catch (error) {
+      res.status(error.status || 400).json({ error: error.message });
+    }
+  }
+
+  async deleteComment(req, res) {
+    try {
+      const id = Number(req.params.commentId);
+      if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+      await commentService.deleteComment(id, req.user);
+      res.status(204).send();
+    } catch (error) {
+      res.status(error.status || 400).json({ error: error.message });
+    }
+  }
 }

@@ -377,6 +377,49 @@ body {
   background: var(--grey-light);
 }
 
+.media-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  cursor: pointer;
+}
+
+.media-remove:hover {
+  background: var(--bad);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--grey-light);
+  color: var(--text);
+}
+
+.icon-btn.danger:hover {
+  background: #fdecea;
+  color: var(--bad);
+}
+
 .author-link {
   color: inherit;
   text-decoration: none;

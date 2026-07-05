@@ -17,7 +17,10 @@ export const registerSchema = z.object({
 
 export const updateProfileSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
-  avatarUrl: z.string().url('URL inválido').optional().or(z.literal(''))
+  avatarUrl: z.string().url('URL inválido').optional().or(z.literal('')),
+  email: z.string().email('Email inválido').optional(),
+  password: z.string().min(6, 'A nova senha deve ter pelo menos 6 caracteres').optional(),
+  currentPassword: z.string().optional()
 }).strict();
 
 export const forgotPasswordSchema = z.object({
@@ -98,6 +101,13 @@ export const createForumTopicSchema = z.object({
   theme: z.string().optional(),
   imageUrl: z.string().url('URL inválido').optional().or(z.literal(''))
 });
+
+export const updateForumTopicSchema = z.object({
+  title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres').optional(),
+  description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres').optional(),
+  theme: z.string().optional().nullable(),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')).nullable()
+}).strict();
 
 export const createForumReplySchema = z.object({
   body: z.string().min(1, 'Resposta não pode ser vazia')

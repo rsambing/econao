@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getTopic, createReply } from '../api/forum';
+import { Pencil, Trash2, X } from 'lucide-react';
+import { getTopic, createReply, updateReply, deleteReply, updateTopic, deleteTopic } from '../api/forum';
+import { uploadMedia } from '../api/upload';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
+import CommentItem from '../components/CommentItem';
 import BackButton from '../components/BackButton';
 
 export default function ForumTopic() {
@@ -14,9 +17,62 @@ export default function ForumTopic() {
   const [body, setBody] = useState('');
   const [error, setError] = useState('');
 
+  // edição do tópico
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editTheme, setEditTheme] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState('');
+  const [editFile, setEditFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
   const load = () => getTopic(id).then(setTopic);
 
   useEffect(() => { load(); }, [id]);
+
+  const canManage = user && topic && (user.id === topic.author?.id || user.role === 'ADMIN');
+
+  const startEditing = () => {
+    setEditTitle(topic.title);
+    setEditDescription(topic.description);
+    setEditTheme(topic.theme || '');
+    setEditImageUrl(topic.imageUrl || '');
+    setEditFile(null);
+    setError('');
+    setEditing(true);
+  };
+
+  const handleSaveTopic = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    try {
+      let imageUrl = editImageUrl;
+      if (editFile) imageUrl = await uploadMedia(editFile);
+      await updateTopic(topic.id, {
+        title: editTitle,
+        description: editDescription,
+        theme: editTheme || null,
+        imageUrl: imageUrl || null
+      });
+      setEditing(false);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteTopic = async () => {
+    if (!window.confirm('Eliminar este tópico e todas as respostas?')) return;
+    try {
+      await deleteTopic(topic.id);
+      navigate('/forum');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const handleReply = async (e) => {
     e.preventDefault();
@@ -34,32 +90,92 @@ export default function ForumTopic() {
 
   return (
     <div>
-      <BackButton fallback="/forum" />
-      {topic.imageUrl && (
-        <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <BackButton fallback="/forum" />
+        {canManage && !editing && (
+          <span style={{ display: 'flex', gap: 8 }}>
+            <button className="btn" onClick={startEditing}>
+              <Pencil size={15} strokeWidth={2.2} /> Editar
+            </button>
+            <button className="btn danger" onClick={handleDeleteTopic}>
+              <Trash2 size={15} strokeWidth={2.2} /> Eliminar
+            </button>
+          </span>
+        )}
+      </div>
+
+      {editing ? (
+        <form className="form" onSubmit={handleSaveTopic} style={{ maxWidth: 560, marginBottom: 24 }}>
+          <div className="form-group">
+            <label>Título</label>
+            <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required minLength={2} />
+          </div>
+          <div className="form-group">
+            <label>Descrição</label>
+            <textarea
+              rows={4}
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              required
+              style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 8, padding: 10, fontFamily: 'inherit' }}
+            />
+          </div>
+          <div className="form-group">
+            <label>Tema / categoria (opcional)</label>
+            <input value={editTheme} onChange={(e) => setEditTheme(e.target.value)} placeholder="Ex.: Economia, História..." />
+          </div>
+          <div className="form-group">
+            <label>Imagem</label>
+            {editImageUrl && !editFile && (
+              <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
+                <img src={editImageUrl} alt="" style={{ width: 180, height: 110, objectFit: 'cover', borderRadius: 10, display: 'block' }} />
+                <button
+                  type="button"
+                  className="media-remove"
+                  title="Remover imagem"
+                  onClick={() => setEditImageUrl('')}
+                >
+                  <X size={14} strokeWidth={2.6} />
+                </button>
+              </div>
+            )}
+            <input type="file" accept="image/*" onChange={(e) => setEditFile(e.target.files?.[0] || null)} />
+          </div>
+          {error && <div className="error-text">{error}</div>}
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button type="submit" className="btn primary" disabled={saving}>
+              {saving ? 'A guardar...' : 'Guardar alterações'}
+            </button>
+            <button type="button" className="btn" onClick={() => setEditing(false)} disabled={saving}>Cancelar</button>
+          </div>
+        </form>
+      ) : (
+        <>
+          {topic.imageUrl && (
+            <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
+          )}
+          <h1 className="page-title">{topic.title}</h1>
+          <p className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <Avatar name={topic.author?.name} url={topic.author?.avatarUrl} size={20} />
+            por{' '}
+            {topic.author?.id
+              ? <Link to={`/user/${topic.author.id}`} className="author-link">{topic.author.name}</Link>
+              : topic.author?.name}
+            {topic.theme && <span className="badge">{topic.theme}</span>}
+          </p>
+          <p style={{ lineHeight: 1.6 }}>{topic.description}</p>
+        </>
       )}
-      <h1 className="page-title">{topic.title}</h1>
-      <p className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <Avatar name={topic.author?.name} url={topic.author?.avatarUrl} size={20} />
-        por{' '}
-        {topic.author?.id
-          ? <Link to={`/user/${topic.author.id}`} className="author-link">{topic.author.name}</Link>
-          : topic.author?.name}
-      </p>
-      <p style={{ lineHeight: 1.6 }}>{topic.description}</p>
 
       <h2 style={{ marginTop: 32, fontSize: 18 }}>Respostas</h2>
       <div className="list">
         {topic.replies?.map((r) => (
-          <div key={r.id} className="comment" style={{ display: 'flex', gap: 10 }}>
-            <Avatar name={r.author?.name} url={r.author?.avatarUrl} size={32} />
-            <div>
-              {r.author?.id
-                ? <Link to={`/user/${r.author.id}`} className="author-link"><strong>{r.author.name}</strong></Link>
-                : <strong>{r.author?.name}</strong>}
-              <p style={{ margin: '4px 0 0' }}>{r.body}</p>
-            </div>
-          </div>
+          <CommentItem
+            key={r.id}
+            item={r}
+            onSave={async (replyId, text) => { await updateReply(replyId, text); load(); }}
+            onDelete={async (replyId) => { await deleteReply(replyId); load(); }}
+          />
         ))}
         {(!topic.replies || topic.replies.length === 0) && <p className="muted">Sê o primeiro a responder.</p>}
       </div>
@@ -73,7 +189,7 @@ export default function ForumTopic() {
             onChange={(e) => setBody(e.target.value)}
             style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10, fontFamily: 'inherit' }}
           />
-          {error && <div className="error-text">{error}</div>}
+          {error && !editing && <div className="error-text">{error}</div>}
           <button type="submit" className="btn primary">Enviar Resposta</button>
         </form>
       ) : (

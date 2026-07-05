@@ -35,7 +35,11 @@ export class ContentService {
   }
 
   async updateContent(id, data) {
-    return prisma.content.update({ where: { id }, data, include: AUTHOR_SELECT });
+    // String vazia significa "remover o ficheiro" — guarda NULL na base de dados.
+    const normalized = { ...data };
+    if (normalized.imageUrl === '') normalized.imageUrl = null;
+    if (normalized.mediaUrl === '') normalized.mediaUrl = null;
+    return prisma.content.update({ where: { id }, data: normalized, include: AUTHOR_SELECT });
   }
 
   async deleteContent(id) {

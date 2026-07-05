@@ -51,10 +51,11 @@ export default function AdminContent() {
       if (file) mediaUrl = await uploadMedia(file);
       setUploading(false);
 
+      // Em edição, string vazia remove o ficheiro; em criação, omite-se.
       const payload = {
         ...form,
-        mediaUrl: mediaUrl || undefined,
-        imageUrl: imageUrl || undefined,
+        mediaUrl: editingId ? mediaUrl : (mediaUrl || undefined),
+        imageUrl: editingId ? imageUrl : (imageUrl || undefined),
         region: form.region || undefined
       };
       if (editingId) {
@@ -127,12 +128,15 @@ export default function AdminContent() {
             onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
           />
           {form.imageUrl && !coverFile && (
-            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+            <p className="muted" style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
               Capa atual:{' '}
               <a href={form.imageUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 ver <ExternalLink size={13} strokeWidth={2.2} />
-              </a>{' '}
-              (escolhe um ficheiro para substituir)
+              </a>
+              <button type="button" className="btn danger" style={{ padding: '4px 12px', fontSize: 12 }}
+                onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}>
+                Remover
+              </button>
             </p>
           )}
         </div>
@@ -144,12 +148,15 @@ export default function AdminContent() {
             onChange={(e) => setFile(e.target.files?.[0] || null)}
           />
           {form.mediaUrl && !file && (
-            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+            <p className="muted" style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
               Media atual:{' '}
               <a href={form.mediaUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 ver <ExternalLink size={13} strokeWidth={2.2} />
-              </a>{' '}
-              (escolhe um ficheiro para substituir)
+              </a>
+              <button type="button" className="btn danger" style={{ padding: '4px 12px', fontSize: 12 }}
+                onClick={() => setForm((f) => ({ ...f, mediaUrl: '' }))}>
+                Remover
+              </button>
             </p>
           )}
         </div>

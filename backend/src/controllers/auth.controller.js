@@ -1,5 +1,7 @@
+import bcrypt from 'bcrypt';
 import { AuthService } from '../services/auth.service.js';
 import { UserService } from '../services/user.service.js';
+import prisma from '../lib/prisma.js';
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -38,9 +40,26 @@ export class AuthController {
 
   async updateMe(req, res) {
     try {
-      const user = await userService.updateUser(req.user.id, req.body);
+      const { currentPassword, ...data } = req.body;
+
+      // Alterar email ou senha exige confirmar a senha atual.
+      if (data.email !== undefined || data.password !== undefined) {
+        if (!currentPassword) {
+          return res.status(400).json({ error: 'Indica a senha atual para alterar email ou senha.' });
+        }
+        const me = await prisma.user.findUnique({ where: { id: req.user.id } });
+        const valid = await bcrypt.compare(currentPassword, me.password);
+        if (!valid) {
+          return res.status(401).json({ error: 'Senha atual incorreta.' });
+        }
+      }
+
+      const user = await userService.updateUser(req.user.id, data);
       res.status(200).json(user);
     } catch (error) {
+      if (error.code === 'P2002') {
+        return res.status(409).json({ error: 'Esse email já está em uso.' });
+      }
       res.status(400).json({ error: error.message });
     }
   }

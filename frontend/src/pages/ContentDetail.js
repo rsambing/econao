@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
-import { getContent, createComment } from '../api/content';
+import { getContent, createComment, updateComment, deleteComment } from '../api/content';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
-import Avatar from '../components/Avatar';
+import CommentItem from '../components/CommentItem';
 import BackButton from '../components/BackButton';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
@@ -94,15 +94,12 @@ export default function ContentDetail() {
       <h2 style={{ marginTop: 32, fontSize: 18 }}>Comentários</h2>
       <div className="list">
         {content.comments?.map((c) => (
-          <div key={c.id} className="comment" style={{ display: 'flex', gap: 10 }}>
-            <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={32} />
-            <div>
-              {c.author?.id
-                ? <Link to={`/user/${c.author.id}`} className="author-link"><strong>{c.author.name}</strong></Link>
-                : <strong>{c.author?.name}</strong>}
-              <p style={{ margin: '4px 0 0' }}>{c.body}</p>
-            </div>
-          </div>
+          <CommentItem
+            key={c.id}
+            item={c}
+            onSave={async (id, body) => { await updateComment(id, body); load(); }}
+            onDelete={async (id) => { await deleteComment(id); load(); }}
+          />
         ))}
         {(!content.comments || content.comments.length === 0) && <p className="muted">Sê o primeiro a comentar.</p>}
       </div>

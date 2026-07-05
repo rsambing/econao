@@ -8,3 +8,6 @@ export const deleteContent = (id) => client.delete(`/content/${id}`).then((r) =>
 export const listComments = (contentId) => client.get(`/content/${contentId}/comments`).then((r) => r.data);
 export const createComment = (contentId, body) =>
   client.post(`/content/${contentId}/comments`, { body }).then((r) => r.data);
+export const updateComment = (commentId, body) =>
+  client.put(`/comments/${commentId}`, { body }).then((r) => r.data);
+export const deleteComment = (commentId) => client.delete(`/comments/${commentId}`).then((r) => r.data);
