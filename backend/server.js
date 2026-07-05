@@ -18,10 +18,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Em serverless (Vercel), os ficheiros estáticos do swagger-ui-dist (CSS/JS)
+// nem sempre são incluídos no bundle da função — os pedidos acabam a cair no
+// handler do setup() e a devolver a própria página HTML em vez do ficheiro,
+// deixando a página em branco. Carregamos CSS/JS a partir de um CDN (fixado à
+// versão do swagger-ui-dist instalada) para funcionar da mesma forma local e
+// em produção.
+const SWAGGER_UI_VERSION = '5.32.6';
 app.use(
   '/docs',
   swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec)
+  swaggerUi.setup(swaggerSpec, {
+    customCssUrl: `https://unpkg.com/swagger-ui-dist@${SWAGGER_UI_VERSION}/swagger-ui.css`,
+    customJs: [
+      `https://unpkg.com/swagger-ui-dist@${SWAGGER_UI_VERSION}/swagger-ui-bundle.js`,
+      `https://unpkg.com/swagger-ui-dist@${SWAGGER_UI_VERSION}/swagger-ui-standalone-preset.js`
+    ]
+  })
 );
 
 // Registar rotas
