@@ -70,22 +70,46 @@ export class QuizService {
       data: { userId, quizId, score }
     });
 
-    return { attempt, score, total: quiz.questions.length, feedback };
+    const attempts = await prisma.quizAttempt.count({ where: { userId, quizId } });
+
+    return { attempt, score, total: quiz.questions.length, feedback, attempts };
   }
 
   async getRanking(quizId) {
     const attempts = await prisma.quizAttempt.findMany({
       where: { quizId },
-      include: { user: { select: { id: true, name: true } } },
-      orderBy: [{ score: 'desc' }, { createdAt: 'asc' }],
-      take: 10
+      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
+      orderBy: { createdAt: 'asc' }
     });
 
-    return attempts.map((a) => ({
-      userId: a.user.id,
-      name: a.user.name,
-      score: a.score,
-      createdAt: a.createdAt
+    // Agrupa por utilizador: cada pessoa aparece uma única vez no ranking.
+    const byUser = new Map();
+    for (const a of attempts) {
+      if (!a.user) continue;
+      let entry = byUser.get(a.user.id);
+      if (!entry) {
+        entry = {
+          userId: a.user.id,
+          name: a.user.name,
+          avatarUrl: a.user.avatarUrl,
+          bestScore: a.score,
+          attempts: 0
+        };
+        byUser.set(a.user.id, entry);
+      }
+      entry.attempts += 1;
+      if (a.score > entry.bestScore) entry.bestScore = a.score;
+    }
+
+    // Pontuação final: melhor pontuação menos 1 ponto por cada repetição
+    // (quem acerta tudo à primeira fica em vantagem). Nunca abaixo de 0.
+    const rows = [...byUser.values()].map((e) => ({
+      ...e,
+      points: Math.max(e.bestScore - (e.attempts - 1), 0)
     }));
+
+    rows.sort((a, b) => b.points - a.points || b.bestScore - a.bestScore || a.attempts - b.attempts);
+
+    return rows.slice(0, 10);
   }
 }
