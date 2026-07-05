@@ -8,17 +8,17 @@
         build ip
 
 help: ## Mostra esta ajuda
-	@echo EconAO - alvos disponiveis:
-	@echo   make install        - instala dependencias (back + front + mobile)
-	@echo   make back           - corre o backend (Express) em http://localhost:3000
-	@echo   make front          - corre o frontend web (React)
-	@echo   make mobile         - corre a app mobile (Expo)
-	@echo   make db-migrate     - aplica migracoes Prisma na NeonDB
-	@echo   make db-seed        - popula a BD com dados de exemplo
-	@echo   make db-studio      - abre o Prisma Studio
-	@echo   make db-generate    - regenera o Prisma Client
-	@echo   make db-reset       - APAGA e recria a BD (cuidado!)
-	@echo   make ip             - mostra o IP local (para o Expo Go)
+	@echo "EconAO - alvos disponiveis:"
+	@echo "  make install        - instala dependencias (back + front + mobile)"
+	@echo "  make back           - corre o backend (Express) em http://localhost:3000"
+	@echo "  make front          - corre o frontend web (React)"
+	@echo "  make mobile         - corre a app mobile (Expo)"
+	@echo "  make db-migrate     - aplica migracoes Prisma na NeonDB"
+	@echo "  make db-seed        - popula a BD com dados de exemplo"
+	@echo "  make db-studio      - abre o Prisma Studio"
+	@echo "  make db-generate    - regenera o Prisma Client"
+	@echo "  make db-reset       - APAGA e recria a BD (cuidado!)"
+	@echo "  make ip             - mostra o IP local (para o Expo Go)"
 
 # ---- Instalacao ----
 install: install-back install-front install-mobile ## Instala tudo
@@ -63,4 +63,4 @@ build: ## Faz build de producao do frontend
 	cd frontend && npm run build
 
 ip: ## Mostra o IP local (para configurar EXPO_PUBLIC_API_URL no mobile)
-	@powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $$_.IPAddress -notlike '127.*' -and $$_.IPAddress -notlike '169.254.*' } | Select-Object IPAddress, InterfaceAlias | Format-Table -AutoSize"
+	@powershell -NoProfile -Command 'Get-NetIPAddress -AddressFamily IPv4 | Where-Object IPAddress -notlike "127.*" | Where-Object IPAddress -notlike "169.254.*" | Select-Object IPAddress, InterfaceAlias | Format-Table -AutoSize'

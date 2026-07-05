@@ -1,6 +1,15 @@
+import dns from 'node:dns';
 import * as PrismaPkg from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
+
+// O endpoint da NeonDB tem endereços IPv4 e IPv6, mas o IPv6 é inalcançável
+// nalgumas redes (ex.: routers domésticos sem IPv6 configurado). Isto causa
+// ECONNREFUSED/ETIMEDOUT intermitentes ao ligar. `ipv4first` ajuda em geral,
+// mas o driver adapter do Prisma (@prisma/adapter-pg) não respeita esta
+// preferência global — por isso forçamos `family: 4` directamente no pool
+// abaixo, que é o que realmente resolve o problema para as queries Prisma.
+dns.setDefaultResultOrder('ipv4first');
 
 // Support environments where @prisma/client is provided as named exports
 // or as a CommonJS default export (serverless/platforms may differ).
@@ -18,6 +27,7 @@ const pool = new pg.Pool({
   idleTimeoutMillis: 10_000,
   connectionTimeoutMillis: 10_000,
   allowExitOnIdle: true,
+  family: 4,
 });
 
 pool.on('error', (err) => {
