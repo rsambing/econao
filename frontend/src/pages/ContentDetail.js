@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ExternalLink, Flame, Lock } from 'lucide-react';
 import { getContent, createComment, updateComment, deleteComment } from '../api/content';
@@ -50,9 +50,11 @@ export default function ContentDetail() {
   const [commentBody, setCommentBody] = useState('');
   const [error, setError] = useState('');
 
-  const load = () => getContent(id).then(setContent).catch((err) => setError(err.message));
+  const load = useCallback(() => {
+    getContent(id).then(setContent).catch((err) => setError(err.message));
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   const handleComment = async (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Pencil, Trash2 } from 'lucide-react';
 import { getTopic, createReply, updateReply, deleteReply, updateTopic, deleteTopic } from '../api/forum';
@@ -30,9 +30,9 @@ export default function ForumTopic() {
   const [newFiles, setNewFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  const load = () => getTopic(id).then(setTopic);
+  const load = useCallback(() => { getTopic(id).then(setTopic); }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   const canManage = user && topic && (user.id === topic.author?.id || user.role === 'ADMIN');
 
