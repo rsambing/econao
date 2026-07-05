@@ -5,13 +5,15 @@ import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { listQuizzes } from '../../services/quiz';
 import { BumbarButton } from '../../components';
 import { Typography } from '../../constants/Typography';
+import { RowListSkeleton } from '../../components/Skeleton';
 
 export default function QuizzesScreen() {
   const { colors } = useBumbarTheme();
   const router = useRouter();
   const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const load = useCallback(() => { listQuizzes().then(setQuizzes); }, []);
+  const load = useCallback(() => { listQuizzes().then(setQuizzes).finally(() => setLoading(false)); }, []);
   useEffect(() => { load(); }, [load]);
 
   return (
@@ -20,7 +22,7 @@ export default function QuizzesScreen() {
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
         Testa os teus conhecimentos sobre economia e história angolana.
       </Text>
-      <FlatList
+      {loading ? <RowListSkeleton count={4} /> : <FlatList
         data={quizzes}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ paddingBottom: 24 }}
@@ -35,7 +37,7 @@ export default function QuizzesScreen() {
           </View>
         )}
         ListEmptyComponent={<Text style={{ color: colors.textSecondary }}>Ainda não há quizzes disponíveis.</Text>}
-      />
+      />}
     </View>
   );
 }

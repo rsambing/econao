@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
-import { BumbarButton } from '../../components';
+import { BumbarButton, BumbarOutlinedInput } from '../../components';
 import Avatar from '../../components/Avatar';
 import { uploadMedia } from '../../services/upload';
 
@@ -15,6 +15,16 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout, updateProfile } = useAuth();
   const [uploading, setUploading] = useState(false);
+
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogout = async () => {
     await logout();
@@ -51,6 +61,49 @@ export default function ProfileScreen() {
     }
   };
 
+  const startEditing = () => {
+    setName(user?.name || '');
+    setEmail(user?.email || '');
+    setPassword('');
+    setCurrentPassword('');
+    setError('');
+    setEditing(true);
+  };
+
+  const handleSave = async () => {
+    setError('');
+    setSaving(true);
+    try {
+      const changes: Record<string, string> = {};
+      if (name !== user?.name) changes.name = name;
+      if (email !== user?.email) changes.email = email;
+      if (password) changes.password = password;
+
+      const needsCurrentPassword = changes.email !== undefined || changes.password !== undefined;
+      if (needsCurrentPassword) {
+        if (!currentPassword) {
+          setError('Indica a senha atual para alterar email ou senha.');
+          setSaving(false);
+          return;
+        }
+        changes.currentPassword = currentPassword;
+      }
+
+      if (Object.keys(changes).length === 0) {
+        setEditing(false);
+        setSaving(false);
+        return;
+      }
+
+      await updateProfile(changes);
+      setEditing(false);
+    } catch (err: any) {
+      setError(err.message || 'Não foi possível guardar as alterações.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!user) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -80,18 +133,66 @@ export default function ProfileScreen() {
 
         <Text style={[styles.name, { color: colors.text }]}>{user.name}</Text>
 
-        <View style={[styles.infoCard, { backgroundColor: colors.backgroundSecondary }]}>
-          <View style={styles.infoRow}>
-            <Ionicons name="mail" size={20} color={colors.textSecondary} />
-            <Text style={[styles.infoText, { color: colors.textSecondary }]}>{user.email}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="shield-checkmark" size={20} color={colors.textSecondary} />
-            <Text style={[styles.infoText, { color: colors.textSecondary }]}>Papel: {user.role}</Text>
-          </View>
-        </View>
+        {!editing ? (
+          <>
+            <View style={[styles.infoCard, { backgroundColor: colors.backgroundSecondary }]}>
+              <View style={styles.infoRow}>
+                <Ionicons name="mail" size={20} color={colors.textSecondary} />
+                <Text style={[styles.infoText, { color: colors.textSecondary }]}>{user.email}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Ionicons name="shield-checkmark" size={20} color={colors.textSecondary} />
+                <Text style={[styles.infoText, { color: colors.textSecondary }]}>Papel: {user.role}</Text>
+              </View>
+            </View>
 
-        <BumbarButton title="Sair" onPress={handleLogout} variant="danger" size="large" fullWidth />
+            <BumbarButton title="Editar perfil" onPress={startEditing} variant="secondary" size="large" fullWidth />
+            <View style={{ height: 12 }} />
+            <BumbarButton title="Sair" onPress={handleLogout} variant="danger" size="large" fullWidth />
+          </>
+        ) : (
+          <View style={{ width: '100%' }}>
+            <BumbarOutlinedInput label="Nome" value={name} onChangeText={setName} leftIcon="person-outline" />
+            <View style={{ height: 4 }} />
+            <BumbarOutlinedInput
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              leftIcon="mail-outline"
+            />
+            <View style={{ height: 4 }} />
+            <BumbarOutlinedInput
+              label="Nova senha (deixa vazio para manter)"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              leftIcon="lock-closed-outline"
+              rightIcon={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              onRightIconPress={() => setShowPassword(!showPassword)}
+            />
+            {(email !== user.email || !!password) && (
+              <>
+                <View style={{ height: 4 }} />
+                <BumbarOutlinedInput
+                  label="Senha atual (obrigatória para alterar email ou senha)"
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                  secureTextEntry={!showCurrentPassword}
+                  leftIcon="key-outline"
+                  rightIcon={showCurrentPassword ? 'eye-off-outline' : 'eye-outline'}
+                  onRightIconPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                />
+              </>
+            )}
+            {!!error && <Text style={{ color: colors.error, marginBottom: 8 }}>{error}</Text>}
+            <View style={{ height: 12 }} />
+            <BumbarButton title="Guardar alterações" onPress={handleSave} loading={saving} variant="primary" size="large" fullWidth />
+            <View style={{ height: 12 }} />
+            <BumbarButton title="Cancelar" onPress={() => setEditing(false)} variant="tertiary" size="medium" fullWidth />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,23 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { listContent } from '../../services/content';
 import { Typography } from '../../constants/Typography';
-
-const TYPE_LABEL: Record<string, string> = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
+import ContentCard from '../../components/ContentCard';
+import { ContentListSkeleton } from '../../components/Skeleton';
 
 export default function ExploreScreen() {
   const { colors } = useBumbarTheme();
   const router = useRouter();
   const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(() => {
-    setRefreshing(true);
+  const load = useCallback((isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
     listContent()
       .then(setItems)
-      .finally(() => setRefreshing(false));
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(false);
+      });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -28,25 +32,20 @@ export default function ExploreScreen() {
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
         Vídeos, textos e podcasts sobre economia e história de Angola.
       </Text>
-      <FlatList
-        data={items}
-        keyExtractor={(item) => String(item.id)}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={load} tintColor={colors.primary} />}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
-            onPress={() => router.push(`/content/${item.id}`)}
-          >
-            <Text style={[styles.badge, { color: colors.primary, backgroundColor: colors.primary + '20' }]}>
-              {TYPE_LABEL[item.type] || item.type}
-            </Text>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
-            <Text style={[styles.cardTheme, { color: colors.textSecondary }]}>{item.theme}</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={{ color: colors.textSecondary }}>Ainda não há conteúdos publicados.</Text>}
-      />
+      {loading ? (
+        <ContentListSkeleton count={4} />
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(item) => String(item.id)}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.primary} />}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          renderItem={({ item }) => (
+            <ContentCard item={item} onPress={() => router.push(`/content/${item.id}`)} />
+          )}
+          ListEmptyComponent={<Text style={{ color: colors.textSecondary }}>Ainda não há conteúdos publicados.</Text>}
+        />
+      )}
     </View>
   );
 }
@@ -55,8 +54,4 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { ...Typography.presets.h2, marginBottom: 4 },
   subtitle: { ...Typography.presets.body, marginBottom: 16 },
-  card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12 },
-  badge: { alignSelf: 'flex-start', fontSize: 12, fontWeight: '600', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, marginBottom: 8 },
-  cardTitle: { ...Typography.presets.h3, marginBottom: 4 },
-  cardTheme: { ...Typography.presets.label },
 });

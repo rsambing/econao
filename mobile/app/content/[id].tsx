@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, Image, Linking, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
 import { getContent, createComment } from '../../services/content';
@@ -38,6 +38,7 @@ export default function ContentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useBumbarTheme();
   const { user } = useAuth();
+  const router = useRouter();
   const [content, setContent] = useState<any>(null);
   const [commentBody, setCommentBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -71,40 +72,56 @@ export default function ContentDetailScreen() {
       <Text style={{ color: colors.textSecondary, marginBottom: 16 }}>
         {content.theme}{content.region ? ` · ${content.region}` : ''}
       </Text>
-      {content.mediaUrl && <ContentMedia type={content.type} url={content.mediaUrl} primary={colors.primary} />}
-      <Text style={[styles.body, { color: colors.text }]}>{content.body}</Text>
-
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Comentários</Text>
-      {content.comments?.map((c: any) => (
-        <View key={c.id} style={[styles.comment, { borderColor: colors.border }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
-            <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={28} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontWeight: '700', color: colors.text }}>{c.author?.name}</Text>
-              <Text style={{ color: colors.text, marginTop: 2 }}>{c.body}</Text>
-            </View>
-          </View>
-        </View>
-      ))}
-      {(!content.comments || content.comments.length === 0) && (
-        <Text style={{ color: colors.textSecondary }}>Sê o primeiro a comentar.</Text>
-      )}
-
-      {user ? (
-        <View style={{ marginTop: 16 }}>
-          <TextInput
-            style={[styles.input, { borderColor: colors.border, color: colors.text }]}
-            placeholder="Escreve um comentário..."
-            placeholderTextColor={colors.textSecondary}
-            value={commentBody}
-            onChangeText={setCommentBody}
-            multiline
-          />
+      {content.locked ? (
+        <View style={[styles.lockCard, { borderColor: colors.border, backgroundColor: colors.card }]}>
+          <Ionicons name="lock-closed" size={28} color="#e8590c" />
+          <Text style={[styles.lockTitle, { color: colors.text }]}>Conteúdo Jindungo</Text>
+          <Text style={{ color: colors.textSecondary, textAlign: 'center', marginTop: 4 }}>
+            Este conteúdo é exclusivo para utilizadores com conta. Entra ou regista-te para ver tudo.
+          </Text>
+          <View style={{ height: 14 }} />
+          <BumbarButton title="Entrar" onPress={() => router.push('/login')} variant="primary" fullWidth />
           <View style={{ height: 10 }} />
-          <BumbarButton title="Publicar Comentário" onPress={handleComment} loading={submitting} variant="primary" fullWidth />
+          <BumbarButton title="Criar conta" onPress={() => router.push('/register')} variant="secondary" fullWidth />
         </View>
       ) : (
-        <Text style={{ color: colors.textSecondary, marginTop: 16 }}>Entra para comentar.</Text>
+        <>
+          {content.mediaUrl && <ContentMedia type={content.type} url={content.mediaUrl} primary={colors.primary} />}
+          <Text style={[styles.body, { color: colors.text }]}>{content.body}</Text>
+
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Comentários</Text>
+          {content.comments?.map((c: any) => (
+            <View key={c.id} style={[styles.comment, { borderColor: colors.border }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
+                <Avatar name={c.author?.name} url={c.author?.avatarUrl} size={28} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontWeight: '700', color: colors.text }}>{c.author?.name}</Text>
+                  <Text style={{ color: colors.text, marginTop: 2 }}>{c.body}</Text>
+                </View>
+              </View>
+            </View>
+          ))}
+          {(!content.comments || content.comments.length === 0) && (
+            <Text style={{ color: colors.textSecondary }}>Sê o primeiro a comentar.</Text>
+          )}
+
+          {user ? (
+            <View style={{ marginTop: 16 }}>
+              <TextInput
+                style={[styles.input, { borderColor: colors.border, color: colors.text }]}
+                placeholder="Escreve um comentário..."
+                placeholderTextColor={colors.textSecondary}
+                value={commentBody}
+                onChangeText={setCommentBody}
+                multiline
+              />
+              <View style={{ height: 10 }} />
+              <BumbarButton title="Publicar Comentário" onPress={handleComment} loading={submitting} variant="primary" fullWidth />
+            </View>
+          ) : (
+            <Text style={{ color: colors.textSecondary, marginTop: 16 }}>Entra para comentar.</Text>
+          )}
+        </>
       )}
     </ScrollView>
   );
@@ -120,4 +137,6 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderRadius: 10, padding: 12, minHeight: 80, textAlignVertical: 'top' },
   media: { width: '100%', height: 200, borderRadius: 12, marginBottom: 16 },
   mediaLink: { borderWidth: 1, borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 16 },
+  lockCard: { borderWidth: 1, borderRadius: 16, padding: 28, alignItems: 'center' },
+  lockTitle: { ...Typography.presets.h3, marginTop: 8 },
 });

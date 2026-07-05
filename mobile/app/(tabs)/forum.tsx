@@ -5,13 +5,15 @@ import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { listTopics } from '../../services/forum';
 import { Typography } from '../../constants/Typography';
 import Avatar from '../../components/Avatar';
+import { RowListSkeleton } from '../../components/Skeleton';
 
 export default function ForumScreen() {
   const { colors } = useBumbarTheme();
   const router = useRouter();
   const [topics, setTopics] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const load = useCallback(() => { listTopics().then(setTopics); }, []);
+  const load = useCallback(() => { listTopics().then(setTopics).finally(() => setLoading(false)); }, []);
   useEffect(() => { load(); }, [load]);
 
   return (
@@ -20,7 +22,7 @@ export default function ForumScreen() {
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
         Debate temas de economia e história com a comunidade.
       </Text>
-      <FlatList
+      {loading ? <RowListSkeleton count={4} /> : <FlatList
         data={topics}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ paddingBottom: 24 }}
@@ -42,7 +44,7 @@ export default function ForumScreen() {
           </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={{ color: colors.textSecondary }}>Ainda não há tópicos.</Text>}
-      />
+      />}
     </View>
   );
 }
