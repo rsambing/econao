@@ -6,7 +6,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useColorScheme } from 'react-native';
 import { Language, Translations } from '../types/i18n';
 import { translations } from '../constants/translations';
 
@@ -33,9 +32,10 @@ interface SettingsProviderProps {
 }
 
 export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
-  const systemColorScheme = useColorScheme();
   const [language, setLanguageState] = useState<Language>('pt');
-  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+  // Tema claro por omissão — a app segue o estilo claro do web,
+  // independentemente do tema do sistema.
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
 
   // Carregar configurações ao iniciar
   useEffect(() => {
@@ -78,8 +78,9 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     }
   };
 
-  // Determinar se o tema é escuro
-  const isDark = themeMode === 'dark' || (themeMode === 'system' && systemColorScheme === 'dark');
+  // Só fica escuro se o utilizador escolher explicitamente "Escuro" nas
+  // definições — o modo "system" passa a resolver para claro, como no web.
+  const isDark = themeMode === 'dark';
 
   // Obter traduções do idioma atual
   const t = translations[language];

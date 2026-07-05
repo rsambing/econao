@@ -23,8 +23,8 @@ export const Colors = {
     textSecondary: '#767070',
     textInverse: '#FFFFFF',
 
-    // Background
-    background: '#F7F5F4',
+    // Background (branco puro, como o web)
+    background: '#FFFFFF',
     backgroundSecondary: '#ECEAE9',
     card: '#FFFFFF',
 
