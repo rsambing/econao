@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Pencil, Trash2, X } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { getTopic, createReply, updateReply, deleteReply, updateTopic, deleteTopic } from '../api/forum';
 import { uploadMedia } from '../api/upload';
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
 import CommentItem from '../components/CommentItem';
+import MediaGallery from '../components/MediaGallery';
 import BackButton from '../components/BackButton';
+
+const mediaTypeOf = (file) =>
+  file.type.startsWith('video') ? 'VIDEO' : file.type.startsWith('audio') ? 'AUDIO' : 'IMAGE';
 
 export default function ForumTopic() {
   const { id } = useParams();
@@ -22,8 +26,8 @@ export default function ForumTopic() {
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editTheme, setEditTheme] = useState('');
-  const [editImageUrl, setEditImageUrl] = useState('');
-  const [editFile, setEditFile] = useState(null);
+  const [editMedia, setEditMedia] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
   const load = () => getTopic(id).then(setTopic);
@@ -36,8 +40,12 @@ export default function ForumTopic() {
     setEditTitle(topic.title);
     setEditDescription(topic.description);
     setEditTheme(topic.theme || '');
-    setEditImageUrl(topic.imageUrl || '');
-    setEditFile(null);
+    // Junta a galeria e a imagem antiga (imageUrl) numa lista única editável.
+    const gallery = topic.media?.length
+      ? topic.media.map((m) => ({ id: m.id, url: m.url, type: m.type }))
+      : (topic.imageUrl ? [{ url: topic.imageUrl, type: 'IMAGE' }] : []);
+    setEditMedia(gallery);
+    setNewFiles([]);
     setError('');
     setEditing(true);
   };
@@ -47,13 +55,18 @@ export default function ForumTopic() {
     setSaving(true);
     setError('');
     try {
-      let imageUrl = editImageUrl;
-      if (editFile) imageUrl = await uploadMedia(editFile);
+      const media = [...editMedia.map((m) => ({ url: m.url, type: m.type }))];
+      for (const file of newFiles) {
+        const url = await uploadMedia(file);
+        media.push({ url, type: mediaTypeOf(file) });
+      }
+      const firstImage = media.find((m) => m.type === 'IMAGE');
       await updateTopic(topic.id, {
         title: editTitle,
         description: editDescription,
         theme: editTheme || null,
-        imageUrl: imageUrl || null
+        imageUrl: firstImage?.url || null,
+        media
       });
       setEditing(false);
       load();
@@ -125,21 +138,23 @@ export default function ForumTopic() {
             <input value={editTheme} onChange={(e) => setEditTheme(e.target.value)} placeholder="Ex.: Economia, História..." />
           </div>
           <div className="form-group">
-            <label>Imagem</label>
-            {editImageUrl && !editFile && (
-              <div style={{ position: 'relative', display: 'inline-block', marginBottom: 8 }}>
-                <img src={editImageUrl} alt="" style={{ width: 180, height: 110, objectFit: 'cover', borderRadius: 10, display: 'block' }} />
-                <button
-                  type="button"
-                  className="media-remove"
-                  title="Remover imagem"
-                  onClick={() => setEditImageUrl('')}
-                >
-                  <X size={14} strokeWidth={2.6} />
-                </button>
-              </div>
+            <label>Fotos e vídeos (remove com o X ou adiciona mais)</label>
+            <MediaGallery
+              items={editMedia}
+              height={110}
+              onRemove={(i) => setEditMedia((m) => m.filter((_, j) => j !== i))}
+            />
+            <input
+              type="file"
+              accept="image/*,video/*,audio/*"
+              multiple
+              onChange={(e) => setNewFiles([...(e.target.files || [])])}
+            />
+            {newFiles.length > 0 && (
+              <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+                {newFiles.length} novo{newFiles.length > 1 ? 's' : ''} ficheiro{newFiles.length > 1 ? 's' : ''} a adicionar
+              </p>
             )}
-            <input type="file" accept="image/*" onChange={(e) => setEditFile(e.target.files?.[0] || null)} />
           </div>
           {error && <div className="error-text">{error}</div>}
           <div style={{ display: 'flex', gap: 10 }}>
@@ -151,9 +166,11 @@ export default function ForumTopic() {
         </form>
       ) : (
         <>
-          {topic.imageUrl && (
+          {topic.media?.length > 0 ? (
+            <MediaGallery items={topic.media} height={240} />
+          ) : topic.imageUrl ? (
             <img src={topic.imageUrl} alt="" style={{ width: '100%', maxWidth: 640, borderRadius: 12, marginBottom: 16 }} />
-          )}
+          ) : null}
           <h1 className="page-title">{topic.title}</h1>
           <p className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <Avatar name={topic.author?.name} url={topic.author?.avatarUrl} size={20} />

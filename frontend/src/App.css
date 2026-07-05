@@ -377,6 +377,31 @@ body {
   background: var(--grey-light);
 }
 
+/* Galeria de media em scroll horizontal */
+.media-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin: 16px 0;
+  scroll-snap-type: x mandatory;
+}
+
+.media-gallery-item {
+  position: relative;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+.media-gallery-audio {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  background: var(--grey-light);
+  border-radius: 12px;
+}
+
 .media-remove {
   position: absolute;
   top: 6px;

@@ -1,18 +1,29 @@
 import prisma from '../lib/prisma.js';
 
 const AUTHOR_SELECT = { author: { select: { id: true, name: true, avatarUrl: true } } };
+const MEDIA_INCLUDE = { media: { orderBy: { order: 'asc' } } };
+
+/** Converte a lista de media do pedido em registos ordenados. */
+function toMediaCreate(media) {
+  return media.map((m, i) => ({ url: m.url, type: m.type || 'IMAGE', order: i }));
+}
 
 export class ForumService {
   async createTopic(data, authorId) {
+    const { media, ...rest } = data;
     return prisma.forumTopic.create({
-      data: { ...data, authorId },
-      include: AUTHOR_SELECT
+      data: {
+        ...rest,
+        authorId,
+        ...(media?.length ? { media: { create: toMediaCreate(media) } } : {})
+      },
+      include: { ...AUTHOR_SELECT, ...MEDIA_INCLUDE }
     });
   }
 
   async getAllTopics() {
     return prisma.forumTopic.findMany({
-      include: { ...AUTHOR_SELECT, _count: { select: { replies: true } } },
+      include: { ...AUTHOR_SELECT, ...MEDIA_INCLUDE, _count: { select: { replies: true } } },
       orderBy: { createdAt: 'desc' }
     });
   }
@@ -22,6 +33,7 @@ export class ForumService {
       where: { id },
       include: {
         ...AUTHOR_SELECT,
+        ...MEDIA_INCLUDE,
         replies: {
           include: { author: { select: { id: true, name: true, avatarUrl: true } } },
           orderBy: { createdAt: 'asc' }
@@ -46,10 +58,17 @@ export class ForumService {
       err.status = 403;
       throw err;
     }
+    const { media, ...rest } = data;
     return prisma.forumTopic.update({
       where: { id },
-      data,
-      include: AUTHOR_SELECT
+      data: {
+        ...rest,
+        // Quando o pedido traz `media`, a lista enviada substitui a galeria inteira.
+        ...(media !== undefined
+          ? { media: { deleteMany: {}, create: toMediaCreate(media) } }
+          : {})
+      },
+      include: { ...AUTHOR_SELECT, ...MEDIA_INCLUDE }
     });
   }
 

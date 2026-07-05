@@ -48,8 +48,25 @@ model Content {
   region   String?
 
   authorId Int
-  author   User      @relation(fields: [authorId], references: [id])
+  author   User        @relation(fields: [authorId], references: [id])
   comments Comment[]
+  media    MediaItem[]
+
+  createdAt DateTime @default(now())
+}
+
+// Ficheiro de uma galeria (foto/vídeo/áudio) de um conteúdo ou tópico do fórum.
+model MediaItem {
+  id    Int    @id @default(autoincrement())
+  url   String
+  type  String @default("IMAGE")
+  order Int    @default(0)
+
+  contentId Int?
+  content   Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  topicId Int?
+  topic   ForumTopic? @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
@@ -121,6 +138,7 @@ model ForumTopic {
   author   User @relation(fields: [authorId], references: [id])
 
   replies ForumReply[]
+  media   MediaItem[]
 
   createdAt DateTime @default(now())
 }

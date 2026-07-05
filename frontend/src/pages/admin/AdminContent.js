@@ -4,8 +4,12 @@ import { listContent, createContent, updateContent, deleteContent } from '../../
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
+import MediaGallery from '../../components/MediaGallery';
 
 const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '' };
+
+const mediaTypeOf = (f) =>
+  f.type.startsWith('video') ? 'VIDEO' : f.type.startsWith('audio') ? 'AUDIO' : 'IMAGE';
 
 export default function AdminContent() {
   const { user } = useAuth();
@@ -14,6 +18,8 @@ export default function AdminContent() {
   const [editingId, setEditingId] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [file, setFile] = useState(null);
+  const [gallery, setGallery] = useState([]);
+  const [galleryFiles, setGalleryFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,6 +43,8 @@ export default function AdminContent() {
     setEditingId(null);
     setCoverFile(null);
     setFile(null);
+    setGallery([]);
+    setGalleryFiles([]);
   };
 
   const handleSubmit = async (e) => {
@@ -46,9 +54,15 @@ export default function AdminContent() {
       let mediaUrl = form.mediaUrl;
       let imageUrl = form.imageUrl;
 
-      if (coverFile || file) setUploading(true);
+      if (coverFile || file || galleryFiles.length) setUploading(true);
       if (coverFile) imageUrl = await uploadMedia(coverFile);
       if (file) mediaUrl = await uploadMedia(file);
+
+      const media = [...gallery.map((m) => ({ url: m.url, type: m.type }))];
+      for (const gf of galleryFiles) {
+        const url = await uploadMedia(gf);
+        media.push({ url, type: mediaTypeOf(gf) });
+      }
       setUploading(false);
 
       // Em edição, string vazia remove o ficheiro; em criação, omite-se.
@@ -56,7 +70,8 @@ export default function AdminContent() {
         ...form,
         mediaUrl: editingId ? mediaUrl : (mediaUrl || undefined),
         imageUrl: editingId ? imageUrl : (imageUrl || undefined),
-        region: form.region || undefined
+        region: form.region || undefined,
+        media
       };
       if (editingId) {
         await updateContent(editingId, payload);
@@ -75,6 +90,8 @@ export default function AdminContent() {
     setEditingId(item.id);
     setCoverFile(null);
     setFile(null);
+    setGallery((item.media || []).map((m) => ({ id: m.id, url: m.url, type: m.type })));
+    setGalleryFiles([]);
     setForm({
       type: item.type,
       title: item.title,
@@ -157,6 +174,25 @@ export default function AdminContent() {
                 onClick={() => setForm((f) => ({ ...f, mediaUrl: '' }))}>
                 Remover
               </button>
+            </p>
+          )}
+        </div>
+        <div className="form-group">
+          <label>Galeria (fotos/vídeos extra — remove com o X ou adiciona vários)</label>
+          <MediaGallery
+            items={gallery}
+            height={90}
+            onRemove={(i) => setGallery((g) => g.filter((_, j) => j !== i))}
+          />
+          <input
+            type="file"
+            accept="image/*,video/*,audio/*"
+            multiple
+            onChange={(e) => setGalleryFiles([...(e.target.files || [])])}
+          />
+          {galleryFiles.length > 0 && (
+            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+              {galleryFiles.length} novo{galleryFiles.length > 1 ? 's' : ''} ficheiro{galleryFiles.length > 1 ? 's' : ''} a adicionar
             </p>
           )}
         </div>

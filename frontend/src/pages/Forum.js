@@ -6,6 +6,10 @@ import { useAuth } from '../context/AuthContext';
 import { ListSkeleton } from '../components/Skeleton';
 import Avatar from '../components/Avatar';
 
+// Deduz o tipo de galeria a partir do MIME type do ficheiro.
+const mediaTypeOf = (file) =>
+  file.type.startsWith('video') ? 'VIDEO' : file.type.startsWith('audio') ? 'AUDIO' : 'IMAGE';
+
 export default function Forum() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -14,7 +18,8 @@ export default function Forum() {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [file, setFile] = useState(null);
+  const [theme, setTheme] = useState('');
+  const [files, setFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,14 +32,24 @@ export default function Forum() {
     setError('');
     setSubmitting(true);
     try {
-      let imageUrl;
-      if (file) {
-        imageUrl = await uploadMedia(file);
+      const media = [];
+      for (const file of files) {
+        const url = await uploadMedia(file);
+        media.push({ url, type: mediaTypeOf(file) });
       }
-      await createTopic({ title, description, imageUrl });
+      // A primeira imagem serve de capa (imageUrl) para a lista de tópicos.
+      const firstImage = media.find((m) => m.type === 'IMAGE');
+      await createTopic({
+        title,
+        description,
+        theme: theme || undefined,
+        imageUrl: firstImage?.url,
+        media
+      });
       setTitle('');
       setDescription('');
-      setFile(null);
+      setTheme('');
+      setFiles([]);
       setShowForm(false);
       load();
     } catch (err) {
@@ -72,8 +87,22 @@ export default function Forum() {
             />
           </div>
           <div className="form-group">
-            <label>Imagem (opcional)</label>
-            <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <label>Tema / categoria (opcional)</label>
+            <input value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex.: Economia, História..." />
+          </div>
+          <div className="form-group">
+            <label>Fotos e vídeos (opcional, podes escolher vários)</label>
+            <input
+              type="file"
+              accept="image/*,video/*,audio/*"
+              multiple
+              onChange={(e) => setFiles([...(e.target.files || [])])}
+            />
+            {files.length > 0 && (
+              <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+                {files.length} ficheiro{files.length > 1 ? 's' : ''} selecionado{files.length > 1 ? 's' : ''}
+              </p>
+            )}
           </div>
           {error && <div className="error-text">{error}</div>}
           <button type="submit" className="btn primary" disabled={submitting}>

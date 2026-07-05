@@ -5,6 +5,7 @@ import { getContent, createComment, updateComment, deleteComment } from '../api/
 import { useAuth } from '../context/AuthContext';
 import { DetailSkeleton } from '../components/Skeleton';
 import CommentItem from '../components/CommentItem';
+import MediaGallery from '../components/MediaGallery';
 import BackButton from '../components/BackButton';
 
 const TYPE_LABEL = { VIDEO: 'Vídeo', TEXT: 'Texto', PODCAST: 'Podcast' };
@@ -90,6 +91,8 @@ export default function ContentDetail() {
       {content.mediaUrl && <MediaPlayer type={content.type} url={content.mediaUrl} coverUrl={content.imageUrl} />}
 
       <p style={{ lineHeight: 1.6 }}>{content.body}</p>
+
+      {content.media?.length > 0 && <MediaGallery items={content.media} height={220} />}
 
       <h2 style={{ marginTop: 32, fontSize: 18 }}>Comentários</h2>
       <div className="list">

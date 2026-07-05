@@ -47,6 +47,12 @@ export const updateUserSchema = z.object({
   role: roleEnum.optional()
 }).strict();
 
+// Item da galeria (foto/vídeo/áudio adicional)
+const mediaItemSchema = z.object({
+  url: z.string().url('URL inválido'),
+  type: z.enum(['IMAGE', 'VIDEO', 'AUDIO']).optional().default('IMAGE')
+});
+
 // CONTENT SCHEMAS
 export const createContentSchema = z.object({
   type: contentTypeEnum,
@@ -55,7 +61,8 @@ export const createContentSchema = z.object({
   mediaUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres'),
-  region: z.string().optional()
+  region: z.string().optional(),
+  media: z.array(mediaItemSchema).optional()
 });
 
 export const updateContentSchema = z.object({
@@ -65,7 +72,8 @@ export const updateContentSchema = z.object({
   mediaUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
   theme: z.string().min(2, 'Tema deve ter pelo menos 2 caracteres').optional(),
-  region: z.string().optional()
+  region: z.string().optional(),
+  media: z.array(mediaItemSchema).optional()
 }).strict();
 
 // COMMENT SCHEMAS
@@ -99,14 +107,16 @@ export const createForumTopicSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres'),
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres'),
   theme: z.string().optional(),
-  imageUrl: z.string().url('URL inválido').optional().or(z.literal(''))
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')),
+  media: z.array(mediaItemSchema).optional()
 });
 
 export const updateForumTopicSchema = z.object({
   title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres').optional(),
   description: z.string().min(5, 'Descrição deve ter pelo menos 5 caracteres').optional(),
   theme: z.string().optional().nullable(),
-  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')).nullable()
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')).nullable(),
+  media: z.array(mediaItemSchema).optional()
 }).strict();
 
 export const createForumReplySchema = z.object({
