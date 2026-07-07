@@ -1,0 +1,738 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "EconAO API",
+    "version": "1.0.0",
+    "description": "Documentação da API REST do EconAO — Economia com História: Angola"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Registar novo utilizador (role USER)",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Utilizador registado com sucesso"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Autenticar utilizador e obter token JWT",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticação bem-sucedida"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Obter utilizador autenticado",
+        "tags": [
+          "Autenticação"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilizador autenticado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar o próprio perfil (nome, avatar)",
+        "tags": [
+          "Autenticação"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil atualizado"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Pedir link de recuperação de senha por email",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email enviado (se a conta existir)"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Redefinir a senha usando o token recebido por email",
+        "tags": [
+          "Autenticação"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha redefinida"
+          }
+        }
+      }
+    },
+    "/content": {
+      "get": {
+        "summary": "Listar conteúdos (vídeo, texto, podcast)",
+        "tags": [
+          "Conteúdos"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de conteúdos"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar conteúdo (ADMIN)",
+        "tags": [
+          "Conteúdos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Conteúdo criado"
+          }
+        }
+      }
+    },
+    "/content/{id}": {
+      "get": {
+        "summary": "Obter conteúdo por ID (com comentários)",
+        "tags": [
+          "Conteúdos"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conteúdo encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar conteúdo (ADMIN)",
+        "tags": [
+          "Conteúdos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conteúdo atualizado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar conteúdo (ADMIN)",
+        "tags": [
+          "Conteúdos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Conteúdo eliminado"
+          }
+        }
+      }
+    },
+    "/content/{id}/comments": {
+      "get": {
+        "summary": "Listar comentários de um conteúdo",
+        "tags": [
+          "Comentários"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de comentários"
+          }
+        }
+      },
+      "post": {
+        "summary": "Comentar um conteúdo (autenticado)",
+        "tags": [
+          "Comentários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Comentário criado"
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "put": {
+        "summary": "Editar comentário (autor ou ADMIN)",
+        "tags": [
+          "Comentários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comentário atualizado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar comentário (autor ou ADMIN)",
+        "tags": [
+          "Comentários"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comentário eliminado"
+          }
+        }
+      }
+    },
+    "/forum/topics": {
+      "get": {
+        "summary": "Listar tópicos do fórum",
+        "tags": [
+          "Fórum"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de tópicos"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar tópico (autenticado)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Tópico criado"
+          }
+        }
+      }
+    },
+    "/forum/topics/{id}": {
+      "get": {
+        "summary": "Obter tópico com respostas",
+        "tags": [
+          "Fórum"
+        ],
+        "responses": {
+          "200": {
+            "description": "Tópico encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Editar tópico por completo (autor ou ADMIN)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tópico atualizado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar tópico (autor ou ADMIN)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tópico eliminado"
+          }
+        }
+      }
+    },
+    "/forum/topics/{id}/replies": {
+      "post": {
+        "summary": "Responder a um tópico (autenticado)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Resposta criada"
+          }
+        }
+      }
+    },
+    "/forum/replies/{replyId}": {
+      "put": {
+        "summary": "Editar resposta (autor ou ADMIN)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta atualizada"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar resposta (autor ou ADMIN)",
+        "tags": [
+          "Fórum"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Resposta eliminada"
+          }
+        }
+      }
+    },
+    "/quizzes": {
+      "get": {
+        "summary": "Listar quizzes",
+        "tags": [
+          "Quiz"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de quizzes"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar quiz com perguntas e opções (ADMIN)",
+        "tags": [
+          "Quiz"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Quiz criado"
+          }
+        }
+      }
+    },
+    "/quizzes/{id}": {
+      "get": {
+        "summary": "Obter quiz com perguntas e opções (sem revelar a resposta certa)",
+        "tags": [
+          "Quiz"
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz encontrado"
+          }
+        }
+      }
+    },
+    "/quizzes/{id}/attempts": {
+      "post": {
+        "summary": "Submeter respostas de um quiz (autenticado)",
+        "tags": [
+          "Quiz"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Resultado da tentativa"
+          }
+        }
+      }
+    },
+    "/quizzes/{id}/ranking": {
+      "get": {
+        "summary": "Obter ranking de um quiz (top 10)",
+        "tags": [
+          "Quiz"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranking"
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Pesquisa global (conteúdos, quizzes e fórum)",
+        "tags": [
+          "Pesquisa"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultados agrupados por tipo"
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "summary": "Enviar um ficheiro (imagem/vídeo/áudio) — o servidor envia-o ao R2",
+        "tags": [
+          "Uploads"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL público do ficheiro guardado no R2"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Criar novo utilizador",
+        "tags": [
+          "Utilizadores"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Utilizador criado com sucesso"
+          }
+        }
+      },
+      "get": {
+        "summary": "Listar todos os utilizadores",
+        "tags": [
+          "Utilizadores"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de utilizadores"
+          }
+        }
+      }
+    },
+    "/users/{id}/public": {
+      "get": {
+        "summary": "Perfil público de um utilizador (sem dados sensíveis)",
+        "tags": [
+          "Utilizadores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil público (nome, avatar, papel, tópicos e pontuações)"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Obter utilizador por ID",
+        "tags": [
+          "Utilizadores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilizador encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar utilizador",
+        "tags": [
+          "Utilizadores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Utilizador atualizado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar utilizador",
+        "tags": [
+          "Utilizadores"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Utilizador eliminado"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

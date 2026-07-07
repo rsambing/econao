@@ -2,8 +2,29 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
+import { createRequire } from 'node:module';
 
-import { swaggerSpec } from './docs/swagger.js';
+import { swaggerSpec as liveSwaggerSpec } from './docs/swagger.js';
+
+// Em serverless (Vercel), o swagger-jsdoc não consegue ler os ficheiros de
+// rotas/controllers por glob em tempo de execução (não são um `import`
+// estático, por isso o bundler não os inclui na função) — o resultado é um
+// spec sem "paths". Usamos require() (estático, sempre seguido pelo bundler)
+// para carregar o spec pré-gerado em "postinstall" (scripts/build-swagger-
+// spec.js) e só caímos nele quando o spec gerado ao vivo estiver vazio,
+// para não perder a atualização automática dos comentários @openapi em
+// desenvolvimento local.
+const require = createRequire(import.meta.url);
+function resolveSwaggerSpec() {
+  const hasLivePaths = Object.keys(liveSwaggerSpec?.paths || {}).length > 0;
+  if (hasLivePaths) return liveSwaggerSpec;
+  try {
+    return require('./docs/openapi.json');
+  } catch {
+    return liveSwaggerSpec;
+  }
+}
+const swaggerSpec = resolveSwaggerSpec();
 import authRouter from './src/routes/auth.route.js';
 import userRouter from './src/routes/user.route.js';
 import contentRouter from './src/routes/content.route.js';

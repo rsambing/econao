@@ -4,8 +4,8 @@
   "description": "API do EconAO — Economia com História: Angola",
   "main": "index.js",
   "scripts": {
-    "build": "prisma generate",
-    "postinstall": "prisma generate",
+    "build": "prisma generate && node scripts/build-swagger-spec.js",
+    "postinstall": "prisma generate && node scripts/build-swagger-spec.js",
     "dev": "node server.js",
     "start": "node server.js",
     "seed": "node prisma/seed.js"
