@@ -35,6 +35,9 @@ export default function RootLayout() {
           <Stack.Screen name="content/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="quiz/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="forum/[id]" options={{ headerShown: true, title: '' }} />
+          <Stack.Screen name="forum/new" options={{ presentation: 'modal', headerShown: true, title: 'Novo tópico' }} />
+          <Stack.Screen name="user/[id]" options={{ headerShown: true, title: 'Perfil' }} />
+          <Stack.Screen name="search" options={{ headerShown: true, title: 'Pesquisar' }} />
         </Stack>
       </AuthProvider>
     </SettingsProvider>

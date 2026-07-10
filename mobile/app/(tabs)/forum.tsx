@@ -1,20 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
+import { useAuth } from '../../contexts/AuthContext';
 import { listTopics } from '../../services/forum';
 import { Typography } from '../../constants/Typography';
+import { BumbarButton } from '../../components';
 import Avatar from '../../components/Avatar';
 import { RowListSkeleton } from '../../components/Skeleton';
 
 export default function ForumScreen() {
   const { colors } = useBumbarTheme();
   const router = useRouter();
+  const { user } = useAuth();
   const [topics, setTopics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => { listTopics().then(setTopics).finally(() => setLoading(false)); }, []);
   useEffect(() => { load(); }, [load]);
+  useFocusEffect(load);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -22,6 +26,14 @@ export default function ForumScreen() {
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
         Debate temas de economia e história com a comunidade.
       </Text>
+      {user && (
+        <BumbarButton
+          title="Criar novo tópico"
+          onPress={() => router.push('/forum/new')}
+          variant="primary"
+          style={{ marginBottom: 16 }}
+        />
+      )}
       {loading ? <RowListSkeleton count={4} /> : <FlatList
         data={topics}
         keyExtractor={(item) => String(item.id)}

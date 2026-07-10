@@ -89,8 +89,24 @@ export function RowListSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
+/** Skeleton de um ecrã de detalhe (conteúdo, tópico do fórum, quiz). */
+export function DetailSkeleton() {
+  return (
+    <View style={styles.detail}>
+      <SkeletonBlock width={90} height={20} borderRadius={999} style={{ marginBottom: 14 }} />
+      <SkeletonBlock width="85%" height={26} style={{ marginBottom: 8 }} />
+      <SkeletonBlock width="45%" height={14} style={{ marginBottom: 20 }} />
+      <SkeletonBlock height={200} borderRadius={14} style={{ marginBottom: 20 }} />
+      <SkeletonBlock height={14} style={{ marginBottom: 8 }} />
+      <SkeletonBlock height={14} style={{ marginBottom: 8 }} />
+      <SkeletonBlock width="70%" height={14} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   card: { marginBottom: 20 },
+  detail: { padding: 20 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

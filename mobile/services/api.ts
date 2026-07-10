@@ -18,11 +18,12 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const msg =
+    const rawMsg =
       err.response?.data?.error ||
       err.response?.data?.message ||
       err.message ||
       'Erro desconhecido';
+    const msg = typeof rawMsg === 'string' ? rawMsg : JSON.stringify(rawMsg);
     return Promise.reject(new Error(msg));
   }
 );

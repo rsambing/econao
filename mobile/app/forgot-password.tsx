@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useBumbarTheme } from '../hooks/useBumbarTheme';
 import { BumbarButton, BumbarOutlinedInput } from '../components';
+import KeyboardDismissView from '../components/KeyboardDismissView';
 import { forgotPassword } from '../services/auth';
 import { Typography } from '../constants/Typography';
 
@@ -40,29 +41,31 @@ export default function ForgotPasswordScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Esqueci-me da senha</Text>
-      <Text style={{ color: colors.textSecondary, textAlign: 'center', marginBottom: 24 }}>
-        Indica o teu email e enviamos-te um link para definires uma nova senha.
-      </Text>
-      <BumbarOutlinedInput
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        leftIcon="mail-outline"
-      />
-      {!!error && <Text style={{ color: colors.error, marginTop: 8 }}>{error}</Text>}
-      <View style={{ height: 20 }} />
-      <BumbarButton title="Enviar link de recuperação" onPress={handleSubmit} loading={isLoading} variant="primary" size="large" fullWidth />
-      <View style={{ height: 12 }} />
-      <BumbarButton title="Voltar ao login" onPress={() => router.back()} variant="tertiary" size="medium" fullWidth />
-    </View>
+    <KeyboardDismissView style={{ backgroundColor: colors.background }}>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <Text style={[styles.title, { color: colors.text }]}>Esqueci-me da senha</Text>
+        <Text style={{ color: colors.textSecondary, textAlign: 'center', marginBottom: 24 }}>
+          Indica o teu email e enviamos-te um link para definires uma nova senha.
+        </Text>
+        <BumbarOutlinedInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          leftIcon="mail-outline"
+        />
+        {!!error && <Text style={{ color: colors.error, marginTop: 8 }}>{error}</Text>}
+        <View style={{ height: 20 }} />
+        <BumbarButton title="Enviar link de recuperação" onPress={handleSubmit} loading={isLoading} variant="primary" size="large" fullWidth />
+        <View style={{ height: 12 }} />
+        <BumbarButton title="Voltar ao login" onPress={() => router.back()} variant="tertiary" size="medium" fullWidth />
+      </ScrollView>
+    </KeyboardDismissView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center' },
+  container: { flexGrow: 1, padding: 24, justifyContent: 'center' },
   title: { ...Typography.presets.h1, marginBottom: 12, textAlign: 'center' },
 });

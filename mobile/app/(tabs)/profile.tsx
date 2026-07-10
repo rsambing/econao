@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
 import { BumbarButton, BumbarOutlinedInput } from '../../components';
+import KeyboardDismissView from '../../components/KeyboardDismissView';
 import Avatar from '../../components/Avatar';
 import { uploadMedia } from '../../services/upload';
 
@@ -123,7 +124,8 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardDismissView>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <TouchableOpacity onPress={handleChangeAvatar} disabled={uploading} style={styles.avatarWrapper}>
           <Avatar name={user.name} url={user.avatarUrl} size={120} />
           <View style={[styles.editBadge, { backgroundColor: colors.primary }]}>
@@ -194,6 +196,7 @@ export default function ProfileScreen() {
           </View>
         )}
       </ScrollView>
+      </KeyboardDismissView>
     </SafeAreaView>
   );
 }

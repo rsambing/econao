@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, FlatList, RefreshControl, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { listContent } from '../../services/content';
 import { Typography } from '../../constants/Typography';
@@ -32,6 +33,15 @@ export default function ExploreScreen() {
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
         Vídeos, textos e podcasts sobre economia e história de Angola.
       </Text>
+
+      <TouchableOpacity
+        style={[styles.searchBox, { borderColor: colors.border, backgroundColor: colors.card }]}
+        onPress={() => router.push('/search')}
+      >
+        <Ionicons name="search" size={18} color={colors.textSecondary} />
+        <Text style={{ color: colors.textSecondary, marginLeft: 8 }}>Pesquisar conteúdos, quizzes, pessoas...</Text>
+      </TouchableOpacity>
+
       {loading ? (
         <ContentListSkeleton count={4} />
       ) : (
@@ -54,4 +64,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { ...Typography.presets.h2, marginBottom: 4 },
   subtitle: { ...Typography.presets.body, marginBottom: 16 },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 16,
+  },
 });

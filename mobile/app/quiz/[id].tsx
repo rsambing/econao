@@ -5,6 +5,7 @@ import { useBumbarTheme } from '../../hooks/useBumbarTheme';
 import { useAuth } from '../../contexts/AuthContext';
 import { getQuiz, submitAttempt, getRanking } from '../../services/quiz';
 import { BumbarButton } from '../../components';
+import { DetailSkeleton } from '../../components/Skeleton';
 import { Typography } from '../../constants/Typography';
 
 export default function QuizPlayScreen() {
@@ -36,7 +37,13 @@ export default function QuizPlayScreen() {
     setRanking(rank);
   };
 
-  if (!quiz) return null;
+  if (!quiz) {
+    return (
+      <ScrollView style={{ backgroundColor: colors.background }}>
+        <DetailSkeleton />
+      </ScrollView>
+    );
+  }
 
   const feedbackFor = (questionId: number) => result?.feedback?.find((f: any) => f.questionId === questionId);
 
