@@ -13,7 +13,7 @@ function toMediaCreate(media) {
  * a quem tem sessão iniciada. Para visitantes devolve apenas o teaser
  * (título, tema, região, capa) com `locked: true`.
  */
-function applyExclusiveGate(content, isAuthenticated) {
+export function applyExclusiveGate(content, isAuthenticated) {
   if (!content.isExclusive || isAuthenticated) {
     return { ...content, locked: false };
   }

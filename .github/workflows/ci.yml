@@ -1,0 +1,67 @@
+name: CI
+
+# Corre em cada push e em cada Pull Request para a master.
+# Isto é o "CI" (Integração Contínua): valida automaticamente que o código
+# ainda funciona antes de chegar à branch principal. O "CD" (Entrega
+# Contínua) é feito à parte pela Vercel, que já está ligada ao GitHub e faz
+# deploy automático a cada push para a master — ver docs/TESTES_E_CI_CD.md.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  backend:
+    name: Backend — testes (Vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Correr os testes
+        run: npm test
+
+  frontend:
+    name: Frontend — testes e build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Correr os testes
+        run: npm test -- --watchAll=false
+        env:
+          CI: true
+
+      - name: Build de produção
+        run: npm run build
+        env:
+          CI: true
+          REACT_APP_API_URL: https://backend-econao.vercel.app

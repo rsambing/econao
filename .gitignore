@@ -13,6 +13,10 @@ backend/generated/prisma
 # Frontend (CRA)
 frontend/build/
 
+# Testes (relatórios de cobertura)
+backend/coverage/
+frontend/coverage/
+
 # Mobile (Expo)
 mobile/.expo/
 mobile/dist/
