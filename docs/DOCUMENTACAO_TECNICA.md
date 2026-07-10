@@ -485,7 +485,10 @@ Dado o prazo do projecto, os testes realizados até ao momento são **manuais e 
 | Tolerância a suspensão da base de dados (cold start NeonDB) | Consultas repetidas após inactividade | ✅ Reconexão automática sem erro visível ao utilizador |
 | Compilação TypeScript (mobile) | `tsc --noEmit` | ✅ Sem erros nos ficheiros do projecto |
 
-**Limitações actuais (por concluir):** não existe ainda uma suite de testes automatizados (unitários/integração) nem pipeline de CI/CD configurado — trabalho previsto como próximo passo, fora do período coberto por este relatório.
+Para além destes testes manuais, o projecto tem agora uma suite de testes automatizados
+(backend: Vitest, unitários e de integração; frontend: Jest/React Testing Library) e um
+pipeline de CI configurado no GitHub Actions, correndo a cada push — ver
+[`docs/TESTES.md`](./TESTES.md) e [`docs/CI_CD.md`](./CI_CD.md) para detalhes.
 
 ---
 
