@@ -5,7 +5,7 @@ metodologia usada para dividir e acompanhar tarefas, e o cronograma real de sess
 desenvolvimento, com base no histórico de commits do Git (`git log`), que serve de evidência
 verificável de quando cada entrega foi feita.
 
-**Tempo total de desenvolvimento efectivo: 7h00**, distribuído por 6 sessões focadas ao
+**Tempo total de desenvolvimento efectivo: 8h40**, distribuído por 7 sessões focadas ao
 longo da semana (em vez de uma sessão única e prolongada), com entregas incrementais e
 testáveis a cada bloco.
 
@@ -43,8 +43,9 @@ cada uma com um estado (`pendente` → `em progresso` → `concluída`). Princí
 | 3 | 2026-07-05 (tarde) | 1h20 | Funcionalidades centrais de domínio | Quiz refeito (uma pergunta por ecrã) com correcção de ranking e pontuação, CRUD completo de perfil/comentários/tópicos do fórum, galeria de media, conteúdo exclusivo "Jindungo", mobile em tema claro |
 | 4 | 2026-07-05 (noite) | 30min | Estabilidade e primeiro deploy | Correcção do Makefile e de falhas intermitentes na NeonDB, paridade mobile no Explorar, correcção da documentação Swagger (`/docs`) e do build de produção na Vercel |
 | 5 | 2026-07-07 | 10min | Ajuste pontual de produção | Correcção de um spec vazio do Swagger detectado após deploy |
-| 6 | 2026-07-10 | 50min | Qualidade: testes automatizados e CI/CD | Suite de testes (Vitest no backend, Jest/RTL no frontend), workflow de CI no GitHub Actions, correcção de lockfiles e actualização para Node 22, documentação de testes (`docs/TESTES.md`) e de CI/CD (`docs/CI_CD.md`) |
-| | | **7h00** | | |
+| 6 | 2026-07-10 (manhã) | 50min | Qualidade: testes automatizados e CI/CD | Suite de testes (Vitest no backend, Jest/RTL no frontend), workflow de CI no GitHub Actions, correcção de lockfiles e actualização para Node 22, documentação de testes (`docs/TESTES.md`) e de CI/CD (`docs/CI_CD.md`) |
+| 7 | 2026-07-10 (tarde) | 1h40 | Paridade mobile e gestão de quizzes | Correcção da API/media/teclado no mobile, reprodução nativa de vídeo/áudio, pesquisa global e perfil público no mobile, criação/edição/eliminação de tópicos do fórum, botão "Ver ranking" sem precisar de jogar (web + mobile), edição/eliminação de quizzes (endpoint em falta no backend) e formulário de conteúdos condicional ao tipo |
+| | | **8h40** | | |
 
 ---
 
@@ -94,6 +95,10 @@ repositório nesse ponto do histórico), não uma estimativa retroactiva:
 2026-07-10 11:40  Adiciona testes automatizados (backend e frontend) e CI no GitHub Actions
 2026-07-10 12:55  Corrige o CI: regenera lock files e atualiza Node para 22
 2026-07-10 13:03  Documenta testes automatizados e o pipeline de CI/CD
+2026-07-10 13:10  Adiciona cronograma de gestao do trabalho
+2026-07-10 14:05  Mobile: corrige API, media, teclado e paridade com o web (perfil, pesquisa, forum)
+2026-07-10 14:13  Adiciona botao "Ver ranking" na lista de quizzes (web e mobile)
+2026-07-10 15:28  Adiciona edicao e eliminacao de quizzes (backend + admin) e melhora o formulario de conteudos
 ```
 
 ---
@@ -113,3 +118,11 @@ repositório nesse ponto do histórico), não uma estimativa retroactiva:
   de contornar o problema com `npm install` em CI) ficou registada e documentada — um exemplo
   de identificar e corrigir a causa raiz de um problema, em vez de mascará-lo, dentro do tempo
   disponível.
+- **Saber parar a tempo**: ao investigar uma falha do build Android via EAS (também um
+  lockfile dessincronizado, desta vez no mobile), a causa revelou-se mais funda — um conflito
+  de versões entre `react` e uma dependência transitiva do `expo-router` — e corrigi-la por
+  completo exigiria mais tempo de validação do que o disponível. Em vez de arriscar deixar o
+  projecto num estado instável perto do fim, a decisão foi reverter todas as alterações
+  experimentais e voltar ao último commit estável, registando o problema como pendente em vez
+  de o "resolver" às pressas. Preferir um estado funcional conhecido a uma correcção
+  apressada e não testada é, também, gestão de tempo.
