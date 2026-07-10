@@ -97,6 +97,19 @@ export const createQuizSchema = z.object({
   })).min(1, 'Quiz precisa de pelo menos 1 pergunta')
 });
 
+export const updateQuizSchema = z.object({
+  title: z.string().min(2, 'Título deve ter pelo menos 2 caracteres').optional(),
+  imageUrl: z.string().url('URL inválido').optional().or(z.literal('')).nullable(),
+  questions: z.array(z.object({
+    text: z.string().min(2, 'Pergunta deve ter pelo menos 2 caracteres'),
+    order: z.number().int().optional().default(0),
+    options: z.array(z.object({
+      text: z.string().min(1, 'Opção não pode ser vazia'),
+      isCorrect: z.boolean().optional().default(false)
+    })).min(2, 'Cada pergunta precisa de pelo menos 2 opções')
+  })).min(1, 'Quiz precisa de pelo menos 1 pergunta').optional()
+});
+
 export const submitQuizAttemptSchema = z.object({
   answers: z.array(z.object({
     questionId: z.number().int(),

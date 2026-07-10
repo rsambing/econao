@@ -24,7 +24,10 @@
       },
       "package": "ao.econao.app",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,6 +41,12 @@
           "photosPermission": "O EconAO precisa de acesso às tuas fotos para definires uma foto de perfil ou uma imagem de conteúdo."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "603db462-d55c-42de-b0f8-743bfe383690"
+      }
+    }
   }
 }

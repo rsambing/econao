@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Plus } from 'lucide-react';
-import { listQuizzes, createQuiz } from '../../api/quiz';
+import { listQuizzes, getQuiz, createQuiz, updateQuiz, deleteQuiz } from '../../api/quiz';
 import { uploadMedia } from '../../api/upload';
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
@@ -10,7 +10,9 @@ const EMPTY_QUESTION = () => ({ text: '', options: [{ text: '', isCorrect: true 
 export default function AdminQuiz() {
   const { user } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
+  const [existingImageUrl, setExistingImageUrl] = useState('');
   const [file, setFile] = useState(null);
   const [questions, setQuestions] = useState([EMPTY_QUESTION()]);
   const [error, setError] = useState('');
@@ -61,9 +63,35 @@ export default function AdminQuiz() {
   const removeQuestion = (qIndex) => setQuestions((qs) => qs.filter((_, i) => i !== qIndex));
 
   const resetForm = () => {
+    setEditingId(null);
     setTitle('');
+    setExistingImageUrl('');
     setFile(null);
     setQuestions([EMPTY_QUESTION()]);
+    setError('');
+  };
+
+  const handleEdit = async (quizSummary) => {
+    setError('');
+    const quiz = await getQuiz(quizSummary.id);
+    setEditingId(quiz.id);
+    setTitle(quiz.title);
+    setExistingImageUrl(quiz.imageUrl || '');
+    setFile(null);
+    setQuestions(
+      quiz.questions.map((q) => ({
+        text: q.text,
+        options: q.options.map((o) => ({ text: o.text, isCorrect: !!o.isCorrect }))
+      }))
+    );
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Eliminar este quiz e todas as tentativas associadas?')) return;
+    await deleteQuiz(id);
+    if (editingId === id) resetForm();
+    load();
   };
 
   const handleSubmit = async (e) => {
@@ -83,11 +111,11 @@ export default function AdminQuiz() {
 
     setSubmitting(true);
     try {
-      let imageUrl;
+      let imageUrl = existingImageUrl;
       if (file) {
         imageUrl = await uploadMedia(file);
       }
-      await createQuiz({
+      const payload = {
         title,
         imageUrl,
         questions: questions.map((q, i) => ({
@@ -95,7 +123,12 @@ export default function AdminQuiz() {
           order: i + 1,
           options: q.options.filter((o) => o.text.trim())
         }))
-      });
+      };
+      if (editingId) {
+        await updateQuiz(editingId, payload);
+      } else {
+        await createQuiz(payload);
+      }
       resetForm();
       load();
     } catch (err) {
@@ -108,7 +141,7 @@ export default function AdminQuiz() {
   return (
     <div>
       <h1 className="page-title">Gestão de Quizzes</h1>
-      <p className="page-subtitle">Cria quizzes com perguntas, opções e imagem de capa.</p>
+      <p className="page-subtitle">Cria e edita quizzes com perguntas, opções e imagem de capa.</p>
 
       <form className="form" onSubmit={handleSubmit} style={{ maxWidth: 640, marginBottom: 32 }}>
         <div className="form-group">
@@ -118,6 +151,11 @@ export default function AdminQuiz() {
         <div className="form-group">
           <label>Imagem de capa (opcional)</label>
           <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          {existingImageUrl && !file && (
+            <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+              Capa atual: <a href={existingImageUrl} target="_blank" rel="noreferrer">ver</a>
+            </p>
+          )}
         </div>
 
         {questions.map((q, qIndex) => (
@@ -166,20 +204,27 @@ export default function AdminQuiz() {
         </button>
 
         {error && <div className="error-text">{error}</div>}
-        <button type="submit" className="btn primary" disabled={submitting}>
-          {submitting ? 'A criar...' : 'Criar quiz'}
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button type="submit" className="btn primary" disabled={submitting}>
+            {submitting ? 'A guardar...' : editingId ? 'Guardar alterações' : 'Criar quiz'}
+          </button>
+          {editingId && <button type="button" className="btn" onClick={resetForm} disabled={submitting}>Cancelar</button>}
+        </div>
       </form>
 
       <table className="table">
         <thead>
-          <tr><th>Título</th><th>Perguntas</th></tr>
+          <tr><th>Título</th><th>Perguntas</th><th></th></tr>
         </thead>
         <tbody>
           {quizzes.map((q) => (
             <tr key={q.id}>
               <td>{q.title}</td>
               <td>{q._count?.questions ?? 0}</td>
+              <td style={{ display: 'flex', gap: 8 }}>
+                <button className="btn" onClick={() => handleEdit(q)}>Editar</button>
+                <button className="btn danger" onClick={() => handleDelete(q.id)}>Eliminar</button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -34,11 +34,64 @@ export class QuizService {
     });
   }
 
-  async getQuizById(id) {
+  async getQuizById(id, includeAnswers = false) {
     return prisma.quiz.findUnique({
       where: { id },
-      include: PUBLIC_QUESTIONS_INCLUDE
+      include: includeAnswers
+        ? { questions: { orderBy: { order: 'asc' }, include: { options: true } } }
+        : PUBLIC_QUESTIONS_INCLUDE
     });
+  }
+
+  /**
+   * Substitui por completo as perguntas/opções do quiz (mais simples e
+   * seguro do que tentar reconciliar diffs). O QuizAttempt só referencia
+   * quizId, não questionId/optionId, por isso isto não parte tentativas
+   * já submetidas.
+   */
+  async updateQuiz(id, data) {
+    const existing = await prisma.quiz.findUnique({ where: { id } });
+    if (!existing) {
+      const err = new Error('Quiz não encontrado');
+      err.status = 404;
+      throw err;
+    }
+
+    return prisma.$transaction(async (tx) => {
+      if (data.questions) {
+        await tx.question.deleteMany({ where: { quizId: id } });
+      }
+
+      return tx.quiz.update({
+        where: { id },
+        data: {
+          ...(data.title !== undefined && { title: data.title }),
+          ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl || null }),
+          ...(data.questions && {
+            questions: {
+              create: data.questions.map((q) => ({
+                text: q.text,
+                order: q.order ?? 0,
+                options: { create: q.options.map((o) => ({ text: o.text, isCorrect: !!o.isCorrect })) }
+              }))
+            }
+          })
+        },
+        include: { questions: { include: { options: true } } }
+      });
+      // Timeout alargado: a NeonDB pode estar suspensa (cold start) e demorar
+      // mais do que os 5s por omissão do Prisma para a transacção terminar.
+    }, { timeout: 15_000, maxWait: 10_000 });
+  }
+
+  async deleteQuiz(id) {
+    const existing = await prisma.quiz.findUnique({ where: { id } });
+    if (!existing) {
+      const err = new Error('Quiz não encontrado');
+      err.status = 404;
+      throw err;
+    }
+    return prisma.quiz.delete({ where: { id } });
   }
 
   async submitAttempt(quizId, userId, answers) {

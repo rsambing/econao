@@ -3,7 +3,8 @@ import { QuizController } from '../controllers/quiz.controller.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
 import { authenticate } from '../middlewares/authenticate.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
-import { createQuizSchema, submitQuizAttemptSchema } from '../schemas/validation.schemas.js';
+import { optionalAuthenticate } from '../middlewares/optional-authenticate.middleware.js';
+import { createQuizSchema, updateQuizSchema, submitQuizAttemptSchema } from '../schemas/validation.schemas.js';
 
 const quizRouter = Router();
 const quizController = new QuizController();
@@ -28,7 +29,7 @@ quizRouter.get('/quizzes', quizController.getAllQuizzes);
  *     responses:
  *       200: { description: Quiz encontrado }
  */
-quizRouter.get('/quizzes/:id', quizController.getQuizById);
+quizRouter.get('/quizzes/:id', optionalAuthenticate, quizController.getQuizById);
 
 /**
  * @openapi
@@ -47,6 +48,36 @@ quizRouter.post(
   validateRequest(createQuizSchema),
   quizController.createQuiz
 );
+
+/**
+ * @openapi
+ * /quizzes/{id}:
+ *   put:
+ *     summary: Editar quiz por completo — título, capa e perguntas (ADMIN)
+ *     tags: [Quiz]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Quiz atualizado }
+ */
+quizRouter.put(
+  '/quizzes/:id',
+  authenticate,
+  authorize('ADMIN'),
+  validateRequest(updateQuizSchema),
+  quizController.updateQuiz
+);
+
+/**
+ * @openapi
+ * /quizzes/{id}:
+ *   delete:
+ *     summary: Eliminar quiz (ADMIN)
+ *     tags: [Quiz]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       204: { description: Quiz eliminado }
+ */
+quizRouter.delete('/quizzes/:id', authenticate, authorize('ADMIN'), quizController.deleteQuiz);
 
 /**
  * @openapi

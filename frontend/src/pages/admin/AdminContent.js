@@ -7,6 +7,7 @@ import BackButton from '../../components/BackButton';
 import MediaGallery from '../../components/MediaGallery';
 
 const EMPTY_FORM = { type: 'TEXT', title: '', body: '', mediaUrl: '', imageUrl: '', theme: '', region: '', isExclusive: false };
+const GALLERY_LIMIT = 3;
 
 const mediaTypeOf = (f) =>
   f.type.startsWith('video') ? 'VIDEO' : f.type.startsWith('audio') ? 'AUDIO' : 'IMAGE';
@@ -19,7 +20,7 @@ export default function AdminContent() {
   const [coverFile, setCoverFile] = useState(null);
   const [file, setFile] = useState(null);
   const [gallery, setGallery] = useState([]);
-  const [galleryFiles, setGalleryFiles] = useState([]);
+  const [newGalleryItems, setNewGalleryItems] = useState([]); // [{ file, url, type }]
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,13 +39,58 @@ export default function AdminContent() {
 
   const handleChange = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  const handleTypeChange = (e) => {
+    const type = e.target.value;
+    setForm((f) => ({ ...f, type }));
+    // Media e galeria só fazem sentido para VIDEO/PODCAST — limpa ao trocar
+    // para um tipo onde esses campos ficam escondidos, para não submeter
+    // dados escondidos por engano.
+    if (type === 'TEXT') {
+      setFile(null);
+      setForm((f) => ({ ...f, mediaUrl: '' }));
+    }
+    if (type !== 'VIDEO') {
+      setGallery([]);
+      newGalleryItems.forEach((g) => URL.revokeObjectURL(g.url));
+      setNewGalleryItems([]);
+    }
+  };
+
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingId(null);
     setCoverFile(null);
     setFile(null);
     setGallery([]);
-    setGalleryFiles([]);
+    newGalleryItems.forEach((g) => URL.revokeObjectURL(g.url));
+    setNewGalleryItems([]);
+    setError('');
+  };
+
+  const handleGalleryFilesSelected = (e) => {
+    const files = [...(e.target.files || [])];
+    const remaining = GALLERY_LIMIT - gallery.length - newGalleryItems.length;
+    if (remaining <= 0) {
+      setError(`Limite de ${GALLERY_LIMIT} fotos/vídeos na galeria.`);
+      e.target.value = '';
+      return;
+    }
+    const accepted = files.slice(0, remaining);
+    if (files.length > accepted.length) {
+      setError(`Só é possível adicionar mais ${remaining} ficheiro${remaining > 1 ? 's' : ''} (limite de ${GALLERY_LIMIT}).`);
+    } else {
+      setError('');
+    }
+    const withPreview = accepted.map((f) => ({ file: f, url: URL.createObjectURL(f), type: mediaTypeOf(f) }));
+    setNewGalleryItems((prev) => [...prev, ...withPreview]);
+    e.target.value = '';
+  };
+
+  const removeNewGalleryItem = (index) => {
+    setNewGalleryItems((prev) => {
+      URL.revokeObjectURL(prev[index].url);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -54,14 +100,14 @@ export default function AdminContent() {
       let mediaUrl = form.mediaUrl;
       let imageUrl = form.imageUrl;
 
-      if (coverFile || file || galleryFiles.length) setUploading(true);
+      if (coverFile || file || newGalleryItems.length) setUploading(true);
       if (coverFile) imageUrl = await uploadMedia(coverFile);
       if (file) mediaUrl = await uploadMedia(file);
 
       const media = [...gallery.map((m) => ({ url: m.url, type: m.type }))];
-      for (const gf of galleryFiles) {
-        const url = await uploadMedia(gf);
-        media.push({ url, type: mediaTypeOf(gf) });
+      for (const g of newGalleryItems) {
+        const url = await uploadMedia(g.file);
+        media.push({ url, type: g.type });
       }
       setUploading(false);
 
@@ -91,7 +137,9 @@ export default function AdminContent() {
     setCoverFile(null);
     setFile(null);
     setGallery((item.media || []).map((m) => ({ id: m.id, url: m.url, type: m.type })));
-    setGalleryFiles([]);
+    newGalleryItems.forEach((g) => URL.revokeObjectURL(g.url));
+    setNewGalleryItems([]);
+    setError('');
     setForm({
       type: item.type,
       title: item.title,
@@ -110,6 +158,8 @@ export default function AdminContent() {
     load();
   };
 
+  const galleryCount = gallery.length + newGalleryItems.length;
+
   return (
     <div>
       <h1 className="page-title">Gestão de Conteúdos</h1>
@@ -118,7 +168,7 @@ export default function AdminContent() {
       <form className="form" onSubmit={handleSubmit} style={{ maxWidth: 520, marginBottom: 32 }}>
         <div className="form-group">
           <label>Tipo</label>
-          <select value={form.type} onChange={handleChange('type')}>
+          <select value={form.type} onChange={handleTypeChange}>
             <option value="TEXT">Texto</option>
             <option value="VIDEO">Vídeo</option>
             <option value="PODCAST">Podcast</option>
@@ -158,45 +208,57 @@ export default function AdminContent() {
             </p>
           )}
         </div>
-        <div className="form-group">
-          <label>Media (vídeo, áudio ou imagem do conteúdo) — opcional</label>
-          <input
-            type="file"
-            accept="image/*,video/*,audio/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-          />
-          {form.mediaUrl && !file && (
-            <p className="muted" style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-              Media atual:{' '}
-              <a href={form.mediaUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                ver <ExternalLink size={13} strokeWidth={2.2} />
-              </a>
-              <button type="button" className="btn danger" style={{ padding: '4px 12px', fontSize: 12 }}
-                onClick={() => setForm((f) => ({ ...f, mediaUrl: '' }))}>
-                Remover
-              </button>
-            </p>
-          )}
-        </div>
-        <div className="form-group">
-          <label>Galeria (fotos/vídeos extra — remove com o X ou adiciona vários)</label>
-          <MediaGallery
-            items={gallery}
-            height={90}
-            onRemove={(i) => setGallery((g) => g.filter((_, j) => j !== i))}
-          />
-          <input
-            type="file"
-            accept="image/*,video/*,audio/*"
-            multiple
-            onChange={(e) => setGalleryFiles([...(e.target.files || [])])}
-          />
-          {galleryFiles.length > 0 && (
+
+        {form.type !== 'TEXT' && (
+          <div className="form-group">
+            <label>{form.type === 'VIDEO' ? 'Vídeo' : 'Áudio'} do conteúdo — opcional</label>
+            <input
+              type="file"
+              accept={form.type === 'VIDEO' ? 'video/*' : 'audio/*'}
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+            />
+            {form.mediaUrl && !file && (
+              <p className="muted" style={{ fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                Media atual:{' '}
+                <a href={form.mediaUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  ver <ExternalLink size={13} strokeWidth={2.2} />
+                </a>
+                <button type="button" className="btn danger" style={{ padding: '4px 12px', fontSize: 12 }}
+                  onClick={() => setForm((f) => ({ ...f, mediaUrl: '' }))}>
+                  Remover
+                </button>
+              </p>
+            )}
+          </div>
+        )}
+
+        {form.type === 'VIDEO' && (
+          <div className="form-group">
+            <label>Galeria (fotos/vídeos extra — máximo {GALLERY_LIMIT}, remove com o X)</label>
+            <MediaGallery
+              items={gallery}
+              height={90}
+              onRemove={(i) => setGallery((g) => g.filter((_, j) => j !== i))}
+            />
+            <MediaGallery
+              items={newGalleryItems}
+              height={90}
+              onRemove={removeNewGalleryItem}
+            />
+            {galleryCount < GALLERY_LIMIT && (
+              <input
+                type="file"
+                accept="image/*,video/*,audio/*"
+                multiple
+                onChange={handleGalleryFilesSelected}
+              />
+            )}
             <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>
-              {galleryFiles.length} novo{galleryFiles.length > 1 ? 's' : ''} ficheiro{galleryFiles.length > 1 ? 's' : ''} a adicionar
+              {galleryCount}/{GALLERY_LIMIT} ficheiros na galeria
             </p>
-          )}
-        </div>
+          </div>
+        )}
+
         <div className="form-group">
           <label>Tema</label>
           <input value={form.theme} onChange={handleChange('theme')} required />
